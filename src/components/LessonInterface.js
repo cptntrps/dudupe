@@ -119,8 +119,25 @@ const LessonInterface = () => {
         correct = draggedWords.join(' ') === currentExercise.correctAnswer;
         console.log('Drag-drop - Dragged:', draggedWords.join(' '), 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
       } else if (currentExercise.type === 'word-order') {
-        correct = wordOrderAnswer.join(' ') === currentExercise.correctAnswer;
-        console.log('Word order - Answer:', wordOrderAnswer.join(' '), 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
+        const userAnswer = wordOrderAnswer.join(' ').trim();
+        const correctAnswer = currentExercise.correctAnswer.trim();
+        correct = userAnswer === correctAnswer;
+        
+        console.log('=== WORD ORDER DETAILED DEBUG ===');
+        console.log('User selected words array:', wordOrderAnswer);
+        console.log('User answer (joined):', `"${userAnswer}"`);
+        console.log('Expected answer:', `"${correctAnswer}"`);
+        console.log('Length comparison:', userAnswer.length, 'vs', correctAnswer.length);
+        console.log('Character by character comparison:');
+        for (let i = 0; i < Math.max(userAnswer.length, correctAnswer.length); i++) {
+          const userChar = userAnswer[i] || 'undefined';
+          const correctChar = correctAnswer[i] || 'undefined';
+          if (userChar !== correctChar) {
+            console.log(`Difference at position ${i}: "${userChar}" vs "${correctChar}"`);
+          }
+        }
+        console.log('Final result:', correct);
+        console.log('================================');
       } else {
         correct = selectedAnswer === currentExercise.correctAnswer;
         console.log('Multiple choice - Selected:', selectedAnswer, 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
