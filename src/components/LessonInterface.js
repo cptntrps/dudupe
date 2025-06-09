@@ -119,52 +119,28 @@ const LessonInterface = () => {
         correct = draggedWords.join(' ') === currentExercise.correctAnswer;
         console.log('Drag-drop - Dragged:', draggedWords.join(' '), 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
       } else if (currentExercise.type === 'word-order') {
-        // Smart join function that handles punctuation properly
-        const smartJoin = (words) => {
-          if (words.length === 0) return '';
-          
-          console.log('Smart join - processing words:', words);
-          
-          let result = words[0];
-          for (let i = 1; i < words.length; i++) {
-            const word = words[i];
-            console.log(`Processing word ${i}: "${word}" (length: ${word.length})`);
-            
-            // Check if word is punctuation - more comprehensive check
-            const isPunctuation = /^[.!?,:;'")\]}]$/.test(word.trim());
-            console.log(`Is punctuation: ${isPunctuation}`);
-            
-            if (isPunctuation) {
-              result += word;
-              console.log(`Added punctuation directly: "${result}"`);
-            } else {
-              result += ' ' + word;
-              console.log(`Added with space: "${result}"`);
-            }
-          }
-          console.log('Final smart join result:', `"${result}"`);
-          return result;
-        };
+        // Get the correct order by splitting the correct answer
+        const correctOrder = currentExercise.correctAnswer.split(' ');
+        const userOrder = wordOrderAnswer;
         
-        const userAnswer = smartJoin(wordOrderAnswer).trim();
-        const correctAnswer = currentExercise.correctAnswer.trim();
-        correct = userAnswer === correctAnswer;
+        // Check if arrays have same length and same elements in same order
+        correct = correctOrder.length === userOrder.length && 
+                 correctOrder.every((word, index) => word === userOrder[index]);
         
-        console.log('=== WORD ORDER DETAILED DEBUG ===');
-        console.log('User selected words array:', wordOrderAnswer);
-        console.log('User answer (smart joined):', `"${userAnswer}"`);
-        console.log('Expected answer:', `"${correctAnswer}"`);
-        console.log('Length comparison:', userAnswer.length, 'vs', correctAnswer.length);
-        console.log('Character by character comparison:');
-        for (let i = 0; i < Math.max(userAnswer.length, correctAnswer.length); i++) {
-          const userChar = userAnswer[i] || 'undefined';
-          const correctChar = correctAnswer[i] || 'undefined';
-          if (userChar !== correctChar) {
-            console.log(`Difference at position ${i}: "${userChar}" vs "${correctChar}"`);
-          }
+        console.log('=== WORD ORDER COMPARISON ===');
+        console.log('User selected order:', userOrder);
+        console.log('Correct word order:', correctOrder);
+        console.log('Arrays match:', correct);
+        console.log('Length match:', correctOrder.length === userOrder.length);
+        if (correctOrder.length === userOrder.length) {
+          console.log('Word by word comparison:');
+          correctOrder.forEach((word, index) => {
+            const userWord = userOrder[index];
+            const matches = word === userWord;
+            console.log(`Position ${index}: "${userWord}" vs "${word}" = ${matches}`);
+          });
         }
-        console.log('Final result:', correct);
-        console.log('================================');
+        console.log('==============================');
       } else {
         correct = selectedAnswer === currentExercise.correctAnswer;
         console.log('Multiple choice - Selected:', selectedAnswer, 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
