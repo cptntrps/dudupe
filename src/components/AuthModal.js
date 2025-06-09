@@ -79,6 +79,8 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
         );
       }
 
+      console.log('Auth result:', result); // Debug logging
+
       if (result.success) {
         setSuccess(result.message);
         setTimeout(() => {
@@ -87,10 +89,12 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
           resetForm();
         }, 1000);
       } else {
-        setError(result.message);
+        console.error('Auth error:', result.error, result.message); // Debug logging
+        setError(result.message || 'Authentication failed. Please try again.');
       }
     } catch (error) {
-      setError('An unexpected error occurred. Please try again.');
+      console.error('Unexpected auth error:', error); // Debug logging
+      setError(`Unexpected error: ${error.message || error}`);
     } finally {
       setLoading(false);
     }

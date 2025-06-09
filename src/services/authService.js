@@ -24,8 +24,13 @@ class AuthService {
         displayName: displayName
       });
 
-      // Create user document in Firestore
-      await this.createUserDocument(user, { displayName });
+      // Try to create user document in Firestore (but don't fail if offline)
+      try {
+        await this.createUserDocument(user, { displayName });
+      } catch (firestoreError) {
+        console.warn('Could not create user document in Firestore:', firestoreError);
+        // Continue without failing - authentication still works
+      }
 
       return {
         success: true,
@@ -81,13 +86,16 @@ class AuthService {
     if (!user) return;
 
     const userRef = doc(db, 'users', user.uid);
-    const userDoc = await getDoc(userRef);
+    
+    try {
+      const userDoc = await getDoc(userRef);
 
-    if (!userDoc.exists()) {
-      const { displayName, email } = user;
-      const createdAt = serverTimestamp();
+      if (!userDoc.exists()) {
+        const { displayName, email } = user;
+        const createdAt = serverTimestamp();
 
-      try {
+        console.log('Creating user document for:', user.uid);
+        
         await setDoc(userRef, {
           displayName: displayName || additionalData.displayName || 'Anonymous',
           email,
@@ -108,9 +116,15 @@ class AuthService {
           progress: {},
           ...additionalData
         });
-      } catch (error) {
-        console.log('Error creating user document', error);
+        
+        console.log('User document created successfully');
       }
+    } catch (error) {
+      console.error('Error with user document:', error.code, error.message);
+      if (error.code === 'permission-denied') {
+        console.error('Firestore permission denied. Check security rules.');
+      }
+      throw error; // Re-throw so the calling function can handle it
     }
 
     return userRef;
@@ -134,10 +148,11 @@ class AuthService {
         };
       }
     } catch (error) {
+      console.warn('Could not fetch user data from Firestore:', error);
       return {
         success: false,
-        error: error.code,
-        message: 'Error fetching user data'
+        error: error.code || 'offline',
+        message: 'Could not connect to database. Using local authentication only.'
       };
     }
   }

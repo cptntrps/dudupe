@@ -39,4 +39,14 @@ coverage/
 .nyc_output
 
 # Backup files
-*_backup_* 
+*_backup_*
+
+# Sensitive Files - Do Not Commit
+*firebase-adminsdk*.json
+*service-account*.json
+*admin*.json
+*.key
+*.pem
+
+# Firebase Admin SDK and Private Keys
+dudupe-504ce-firebase-adminsdk-fbsvc-61886cbe2b.json 
