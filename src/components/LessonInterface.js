@@ -109,9 +109,13 @@ const LessonInterface = () => {
       }
 
       console.log('Setting feedback - Correct:', correct);
+      console.log('About to set showFeedback to true and isProcessing to false');
+      
       setIsCorrect(correct);
       setShowFeedback(true);
       setIsProcessing(false);
+
+      console.log('After setState - showFeedback should be true, isProcessing should be false');
 
       try {
         console.log('Calling endExercise');
@@ -374,6 +378,8 @@ const LessonInterface = () => {
 
       {/* Fixed bottom footer with buttons */}
       <div className="lesson-footer-fixed">
+        {console.log('Render - showFeedback:', showFeedback, 'isProcessing:', isProcessing, 'isAnswerReady:', isAnswerReady())}
+        
         {!showFeedback && (
           <button
             className={`check-button ${isAnswerReady() && !isProcessing ? 'active' : ''}`}
@@ -385,9 +391,12 @@ const LessonInterface = () => {
         )}
 
         {showFeedback && (
-          <button className="continue-button" onClick={handleContinue}>
-            {currentExerciseIndex < currentLesson.exercises.length - 1 ? 'CONTINUE' : 'FINISH LESSON'}
-          </button>
+          <>
+            {console.log('Showing CONTINUE button')}
+            <button className="continue-button" onClick={handleContinue}>
+              {currentExerciseIndex < currentLesson.exercises.length - 1 ? 'CONTINUE' : 'FINISH LESSON'}
+            </button>
+          </>
         )}
       </div>
     </div>
