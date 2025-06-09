@@ -10,7 +10,7 @@ export const languages = [
 export const lessons = {
   english: [
   {
-    "id": 9,
+    "id": 1,
     "title": "Basic Greetings - Saudações Básicas",
     "description": "Learn how to greet people and introduce yourself. (Aprenda a cumprimentar as pessoas e a se apresentar.)",
     "difficulty": "beginner",
@@ -161,7 +161,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 10,
+    "id": 2,
     "title": "Numbers and Counting (1-20) - Números e Contagem (1-20)",
     "description": "Learn to count and use numbers from one to twenty. (Aprenda a contar e usar números de um a vinte.)",
     "difficulty": "beginner",
@@ -312,7 +312,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 11,
+    "id": 3,
     "title": "Common Objects - Objetos Comuns",
     "description": "Learn the names of everyday objects around you. (Aprenda os nomes de objetos do dia a dia ao seu redor.)",
     "difficulty": "beginner",
@@ -480,7 +480,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 12,
+    "id": 4,
     "title": "The Family - A Família",
     "description": "Learn vocabulary for family members. (Aprenda o vocabulário para os membros da família.)",
     "difficulty": "beginner",
@@ -632,7 +632,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 13,
+    "id": 5,
     "title": "Food and Drink - Comida e Bebida",
     "description": "Learn basic vocabulary for food and drinks. (Aprenda vocabulário básico para comidas e bebidas.)",
     "difficulty": "beginner",
@@ -799,7 +799,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 14,
+    "id": 6,
     "title": "Daily Routines (Present Simple) - Rotinas Diárias",
     "description": "Talk about your daily activities using the Present Simple tense. (Fale sobre suas atividades diárias usando o tempo Presente Simples.)",
     "difficulty": "intermediate",
@@ -953,7 +953,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 15,
+    "id": 7,
     "title": "Places in the City - Lugares na Cidade",
     "description": "Learn to name and talk about places in a city. (Aprenda a nomear e falar sobre lugares em uma cidade.)",
     "difficulty": "intermediate",
@@ -1104,7 +1104,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 16,
+    "id": 8,
     "title": "Asking for Directions - Pedindo Direções",
     "description": "Learn phrases to ask for and give directions. (Aprenda frases para pedir e dar direções.)",
     "difficulty": "intermediate",
@@ -1258,7 +1258,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 17,
+    "id": 9,
     "title": "Talking About Hobbies (Present Continuous) - Falando sobre Hobbies",
     "description": "Describe actions happening now using the Present Continuous. (Descreva ações que estão acontecendo agora usando o Presente Contínuo.)",
     "difficulty": "intermediate",
@@ -1409,7 +1409,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 18,
+    "id": 10,
     "title": "Describing People (Adjectives) - Descrevendo Pessoas",
     "description": "Learn adjectives to describe people's appearance and personality. (Aprenda adjetivos para descrever a aparência e personalidade das pessoas.)",
     "difficulty": "intermediate",
@@ -1562,7 +1562,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 19,
+    "id": 11,
     "title": "Shopping for Clothes - Comprando Roupas",
     "description": "Learn vocabulary and phrases for shopping for clothes. (Aprenda vocabulário e frases para comprar roupas.)",
     "difficulty": "intermediate",
@@ -1715,7 +1715,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 20,
+    "id": 12,
     "title": "Past Events (Past Simple) - Eventos Passados",
     "description": "Talk about completed actions in the past using the Past Simple tense. (Fale sobre ações concluídas no passado usando o Passado Simples.)",
     "difficulty": "intermediate",
@@ -1868,7 +1868,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 21,
+    "id": 13,
     "title": "Future Plans (Going to vs. Will) - Planos Futuros",
     "description": "Learn to talk about future plans and predictions. (Aprenda a falar sobre planos e previsões futuras.)",
     "difficulty": "intermediate",
@@ -2020,7 +2020,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 22,
+    "id": 14,
     "title": "At the Restaurant - No Restaurante",
     "description": "Learn useful phrases for ordering food and dining at a restaurant. (Aprenda frases úteis para pedir comida e jantar em um restaurante.)",
     "difficulty": "intermediate",
@@ -2171,7 +2171,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 23,
+    "id": 15,
     "title": "Weather and Seasons - O Tempo e as Estações",
     "description": "Learn how to talk about the weather and the four seasons. (Aprenda a falar sobre o tempo e as quatro estações.)",
     "difficulty": "intermediate",
@@ -2325,7 +2325,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 24,
+    "id": 16,
     "title": "Expressing Opinions and Debating - Expressando Opiniões",
     "description": "Learn how to express your opinion, agree, and disagree in English. (Aprenda a expressar sua opinião, concordar e discordar em inglês.)",
     "difficulty": "advanced",
@@ -2463,7 +2463,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 25,
+    "id": 17,
     "title": "Work and Careers (Job Interviews) - Trabalho e Carreiras",
     "description": "Learn vocabulary and phrases for job interviews and talking about your career. (Aprenda vocabulário e frases para entrevistas de emprego e para falar sobre sua carreira.)",
     "difficulty": "advanced",
@@ -2618,7 +2618,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 26,
+    "id": 18,
     "title": "Conditionals (If Clauses) - Condicionais",
     "description": "Learn to use conditional sentences to talk about possibilities, hypothetical situations, and consequences. (Aprenda a usar frases condicionais para falar sobre possibilidades, situações hipotéticas e consequências.)",
     "difficulty": "advanced",
@@ -2758,7 +2758,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 27,
+    "id": 19,
     "title": "Phrasal Verbs - Verbos Frasais",
     "description": "Learn common phrasal verbs and their meanings to sound more like a native speaker. (Aprenda verbos frasais comuns e seus significados para soar mais como um falante nativo.)",
     "difficulty": "advanced",
@@ -2913,7 +2913,7 @@ export const lessons = {
     ]
   },
   {
-    "id": 28,
+    "id": 20,
     "title": "Idiomatic Expressions - Expressões Idiomáticas",
     "description": "Understand and use common English idioms to enrich your vocabulary. (Entenda e use expressões idiomáticas comuns em inglês para enriquecer seu vocabulário.)",
     "difficulty": "advanced",

@@ -26,9 +26,8 @@ const LessonMap = () => {
   };
 
   const isLessonUnlocked = (lessonIndex) => {
-    if (lessonIndex === 0) return true;
-    const previousLessonId = lessons[lessonIndex - 1]?.id;
-    return isLessonCompleted(previousLessonId);
+    // Make all lessons available from the start
+    return true;
   };
 
   const getLessonStatus = (lessonId) => {
