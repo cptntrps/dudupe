@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/dudupe/static/css/main.65674245.css",
-    "main.js": "/dudupe/static/js/main.9ef7080f.js",
+    "main.js": "/dudupe/static/js/main.0d3a891b.js",
     "index.html": "/dudupe/index.html",
     "main.65674245.css.map": "/dudupe/static/css/main.65674245.css.map",
-    "main.9ef7080f.js.map": "/dudupe/static/js/main.9ef7080f.js.map"
+    "main.0d3a891b.js.map": "/dudupe/static/js/main.0d3a891b.js.map"
   },
   "entrypoints": [
     "static/css/main.65674245.css",
-    "static/js/main.9ef7080f.js"
+    "static/js/main.0d3a891b.js"
   ]
 }
