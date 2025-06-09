@@ -47,6 +47,7 @@ const LessonInterface = () => {
   // Reset state when exercise changes and start timing
   useEffect(() => {
     if (currentExercise) {
+      console.log('useEffect triggered - resetting state for exercise:', currentExerciseIndex);
       setSelectedAnswer(null);
       setTypedAnswer('');
       setDraggedWords([]);
@@ -62,7 +63,7 @@ const LessonInterface = () => {
       // Start timing this exercise
       startExercise();
     }
-  }, [currentExerciseIndex, currentExercise, startExercise]);
+  }, [currentExerciseIndex]); // Only depend on exercise index, not currentExercise or startExercise
 
   const handleAnswerSelect = (answer) => {
     if (showFeedback || isProcessing) return;
