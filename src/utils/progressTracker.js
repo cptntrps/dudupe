@@ -355,13 +355,32 @@ class ProgressTracker {
 
   // Clear all progress
   clearAllProgress() {
-    if (window.confirm('Are you sure you want to clear all progress? This cannot be undone.')) {
+    if (confirm('Are you sure you want to clear all progress? This cannot be undone.')) {
       localStorage.removeItem(this.storageKey);
-      this.progress = this.getDefaultProgress();
-      this.saveProgress();
+      this.initializeProgress();
       return true;
     }
     return false;
+  }
+
+  // Get default progress structure
+  getDefaultProgress() {
+    return {
+      languages: {},
+      globalStats: {
+        totalXP: 0,
+        currentStreak: 0,
+        longestStreak: 0,
+        lessonsCompleted: 0,
+        totalTimeSpent: 0,
+        averageAccuracy: 0,
+        lastStudyDate: null
+      },
+      achievements: [],
+      exerciseStats: {},
+      dailyStats: {},
+      version: this.version
+    };
   }
 
   // Sync with cloud data - merge cloud progress with local progress
