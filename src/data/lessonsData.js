@@ -6127,7 +6127,15 @@ export const lessons = {
 };
 
 export const getLessonsForLanguage = (languageId) => {
-  return lessons[languageId] || [];
+  const originalLessons = lessons[languageId] || [];
+  
+  // Filter out all exercises that are not multiple-choice
+  const filteredLessons = originalLessons.map(lesson => ({
+    ...lesson,
+    exercises: lesson.exercises.filter(exercise => exercise.type === 'multiple-choice')
+  })).filter(lesson => lesson.exercises.length > 0); // Remove lessons with no exercises left
+  
+  return filteredLessons;
 };
 
 export const getLanguageById = (languageId) => {
