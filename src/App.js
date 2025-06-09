@@ -11,7 +11,7 @@ import './App.css';
 function App() {
   return (
     <AppProvider>
-      <Router>
+      <Router basename="/dudupe">
         <div className="container">
           <Routes>
             <Route path="/" element={<WelcomeScreen />} />
