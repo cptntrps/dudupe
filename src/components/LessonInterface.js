@@ -253,13 +253,27 @@ const LessonInterface = () => {
 
   const handleWordOrderClick = (word) => {
     if (showFeedback || isProcessing) return;
+    
+    console.log('Word clicked:', word);
+    console.log('Current word order answer:', wordOrderAnswer);
+    
     if (wordOrderAnswer.includes(word)) {
-      // Remove word from answer
-      setWordOrderAnswer(wordOrderAnswer.filter(w => w !== word));
+      // Remove word from answer and make it available again
+      console.log('Removing word from answer:', word);
+      setWordOrderAnswer(prev => prev.filter(w => w !== word));
     } else {
       // Add word to answer
-      setWordOrderAnswer([...wordOrderAnswer, word]);
+      console.log('Adding word to answer:', word);
+      setWordOrderAnswer(prev => [...prev, word]);
     }
+  };
+
+  // New function to handle removing words from the selected order
+  const handleOrderedWordClick = (word, index) => {
+    if (showFeedback || isProcessing) return;
+    
+    console.log('Removing ordered word at index:', index, 'word:', word);
+    setWordOrderAnswer(prev => prev.filter((_, i) => i !== index));
   };
 
   const isAnswerReady = () => {
@@ -374,11 +388,21 @@ const LessonInterface = () => {
             ) : currentExercise.type === 'word-order' ? (
               <div className="word-order-exercise">
                 <div className="selected-words">
-                  {wordOrderAnswer.map((word, index) => (
-                    <span key={index} className="ordered-word">
-                      {index + 1}. {word}
-                    </span>
-                  ))}
+                  {wordOrderAnswer.length === 0 ? (
+                    <span className="drop-placeholder">Click words below to build your answer... (Clique nas palavras abaixo para formar sua resposta...)</span>
+                  ) : (
+                    wordOrderAnswer.map((word, index) => (
+                      <span 
+                        key={index} 
+                        className="ordered-word"
+                        onClick={() => handleOrderedWordClick(word, index)}
+                        style={{ cursor: 'pointer' }}
+                        title="Click to remove (Clique para remover)"
+                      >
+                        {index + 1}. {word}
+                      </span>
+                    ))
+                  )}
                 </div>
                 <div className="word-options">
                   {currentExercise.words.map((word, index) => (

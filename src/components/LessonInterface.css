@@ -416,22 +416,50 @@
 }
 
 .selected-words {
-  min-height: 60px;
+  min-height: 80px;
   padding: 15px;
   background: #f8f9fa;
   border: 2px solid #e9ecef;
   border-radius: 12px;
   margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  position: relative;
 }
 
 .ordered-word {
   display: inline-block;
   background: #58cc02;
   color: white;
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
   margin: 4px;
   font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.ordered-word:hover {
+  background: #46a302;
+  transform: scale(1.05);
+}
+
+.ordered-word:active {
+  transform: scale(0.95);
+}
+
+.drop-placeholder {
+  color: #9ca3af;
+  font-style: italic;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
 }
 
 .word-options {
@@ -450,9 +478,14 @@
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
-.word-option:hover:not(:disabled) {
+.word-option:hover:not(:disabled):not(.selected) {
   background: #e5e7eb;
   transform: translateY(-2px);
 }
@@ -461,6 +494,8 @@
   background: #ddd6fe;
   border-color: #8b5cf6;
   color: #7c3aed;
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .word-option:disabled {
