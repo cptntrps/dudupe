@@ -234,14 +234,18 @@ const LessonInterface = () => {
         
         console.log('Lesson completion result:', completionData);
         
+        // Ensure completionData is serializable and not a Promise
+        const safeCompletionData = completionData && typeof completionData === 'object' ? 
+          JSON.parse(JSON.stringify(completionData)) : completionData;
+        
         navigate('/results', { 
           state: { 
             correctAnswers, 
             totalQuestions: currentLesson.exercises.length,
-            xpEarned: completionData?.xpEarned || currentLesson.xp,
+            xpEarned: safeCompletionData?.xpEarned || currentLesson.xp,
             accuracy: accuracy,
             timeSpent: Math.round(timeSpent * 10) / 10,
-            completionData: completionData
+            completionData: safeCompletionData
           } 
         });
       } catch (error) {
