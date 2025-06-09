@@ -15,6 +15,9 @@ class ProgressTracker {
         // Migrate if version is different
         if (this.progress.version !== this.version) {
           this.migrateProgress();
+        } else {
+          // Even if version matches, ensure all required properties exist
+          this.ensureRequiredProperties();
         }
       } catch (error) {
         console.warn('Failed to parse stored progress, resetting:', error);
@@ -23,6 +26,36 @@ class ProgressTracker {
     } else {
       this.resetProgress();
     }
+  }
+
+  // Ensure all required properties exist in progress object
+  ensureRequiredProperties() {
+    if (!this.progress.exercisePerformance) {
+      this.progress.exercisePerformance = {};
+    }
+    if (!this.progress.dailyStats) {
+      this.progress.dailyStats = {};
+    }
+    if (!this.progress.achievements) {
+      this.progress.achievements = [];
+    }
+    if (!this.progress.user) {
+      this.progress.user = {
+        totalXP: 0,
+        currentStreak: 0,
+        longestStreak: 0,
+        lastActiveDate: null,
+        totalLessonsCompleted: 0,
+        totalExercisesCompleted: 0,
+        overallAccuracy: 0,
+        createdDate: new Date().toISOString(),
+        level: 1
+      };
+    }
+    if (!this.progress.languages) {
+      this.progress.languages = {};
+    }
+    this.saveProgress();
   }
 
   // Create fresh progress structure
@@ -51,6 +84,18 @@ class ProgressTracker {
   // Handle progress migration between versions
   migrateProgress() {
     console.log('Migrating progress from version', this.progress.version, 'to', this.version);
+    
+    // Ensure all required properties exist
+    if (!this.progress.exercisePerformance) {
+      this.progress.exercisePerformance = {};
+    }
+    if (!this.progress.dailyStats) {
+      this.progress.dailyStats = {};
+    }
+    if (!this.progress.achievements) {
+      this.progress.achievements = [];
+    }
+    
     // Add migration logic here when content changes
     this.progress.version = this.version;
     this.saveProgress();
@@ -212,6 +257,11 @@ class ProgressTracker {
 
   // Record exercise performance
   recordExercisePerformance(exerciseType, correct, timeSpent) {
+    // Ensure exercisePerformance object exists
+    if (!this.progress.exercisePerformance) {
+      this.progress.exercisePerformance = {};
+    }
+    
     if (!this.progress.exercisePerformance[exerciseType]) {
       this.progress.exercisePerformance[exerciseType] = {
         total: 0,
