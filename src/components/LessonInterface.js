@@ -123,16 +123,26 @@ const LessonInterface = () => {
         const smartJoin = (words) => {
           if (words.length === 0) return '';
           
+          console.log('Smart join - processing words:', words);
+          
           let result = words[0];
           for (let i = 1; i < words.length; i++) {
             const word = words[i];
-            // Don't add space before punctuation marks
-            if (word.match(/^[.!?,:;]$/)) {
+            console.log(`Processing word ${i}: "${word}" (length: ${word.length})`);
+            
+            // Check if word is punctuation - more comprehensive check
+            const isPunctuation = /^[.!?,:;'")\]}]$/.test(word.trim());
+            console.log(`Is punctuation: ${isPunctuation}`);
+            
+            if (isPunctuation) {
               result += word;
+              console.log(`Added punctuation directly: "${result}"`);
             } else {
               result += ' ' + word;
+              console.log(`Added with space: "${result}"`);
             }
           }
+          console.log('Final smart join result:', `"${result}"`);
           return result;
         };
         
