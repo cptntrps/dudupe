@@ -114,23 +114,37 @@ export const AppProvider = ({ children }) => {
 
   // Update user stats from progress tracker
   const updateUserStats = () => {
-    setUserStats(progressTracker.getUserStats());
+    console.log('=== UPDATE USER STATS DEBUG ===');
+    const newStats = progressTracker.getUserStats();
+    console.log('progressTracker.getUserStats() returned:', newStats);
+    setUserStats(newStats);
+    console.log('userStats state updated to:', newStats);
+    console.log('=== END UPDATE USER STATS DEBUG ===');
   };
 
   // Sync progress to cloud if user is authenticated
   const syncProgressToCloud = async () => {
     if (!user) return;
     
+    console.log('=== SYNC TO CLOUD DEBUG ===');
+    
     const localProgress = progressTracker.exportProgress();
     const stats = progressTracker.getUserStats();
+    
+    console.log('Raw progressTracker.getUserStats():', stats);
+    console.log('Raw progressTracker.exportProgress():', localProgress);
     
     console.log('Syncing progress to cloud:', {
       totalXP: stats.totalXP,
       currentStreak: stats.currentStreak,
-      lessonsCompleted: stats.lessonsCompleted
+      lessonsCompleted: stats.lessonsCompleted,
+      averageAccuracy: stats.averageAccuracy,
+      longestStreak: stats.longestStreak,
+      totalTimeSpent: stats.totalTimeSpent,
+      level: stats.level
     });
     
-    await authService.updateUserData(user.uid, {
+    const updateData = {
       progress: localProgress,
       totalXP: stats.totalXP,
       currentStreak: stats.currentStreak,
@@ -140,9 +154,19 @@ export const AppProvider = ({ children }) => {
       totalTimeSpent: stats.totalTimeSpent,
       level: stats.level,
       lastSyncAt: new Date().toISOString()
-    });
+    };
     
-    console.log('Progress synced to cloud successfully');
+    console.log('Full update data being sent to Firestore:', updateData);
+    
+    try {
+      const result = await authService.updateUserData(user.uid, updateData);
+      console.log('Firestore update result:', result);
+      console.log('Progress synced to cloud successfully');
+    } catch (error) {
+      console.error('Error syncing to cloud:', error);
+    }
+    
+    console.log('=== END SYNC TO CLOUD DEBUG ===');
   };
 
   // Heart management

@@ -134,7 +134,13 @@ class ProgressTracker {
 
   // Mark lesson as completed
   completeLesson(languageId, lessonId, xpEarned, accuracy, timeSpent) {
+    console.log('=== COMPLETE LESSON DEBUG ===');
+    console.log('Input:', { languageId, lessonId, xpEarned, accuracy, timeSpent });
+    console.log('Before completion - user stats:', this.progress.user);
+    
     const langProgress = this.getLanguageProgress(languageId);
+    console.log('Language progress before:', langProgress);
+    
     const completionData = {
       lessonId: lessonId,
       completedAt: new Date().toISOString(),
@@ -150,28 +156,36 @@ class ProgressTracker {
 
     if (existingIndex >= 0) {
       // Update existing completion (user repeated lesson)
+      console.log('Updating existing lesson completion at index:', existingIndex);
       langProgress.lessonsCompleted[existingIndex] = completionData;
     } else {
       // New lesson completion
+      console.log('Adding new lesson completion');
       langProgress.lessonsCompleted.push(completionData);
       this.progress.user.totalLessonsCompleted++;
+      console.log('totalLessonsCompleted incremented to:', this.progress.user.totalLessonsCompleted);
     }
 
     // Update XP
+    const previousTotalXP = this.progress.user.totalXP;
     langProgress.totalXP += xpEarned;
     this.progress.user.totalXP += xpEarned;
+    console.log('XP updated from', previousTotalXP, 'to', this.progress.user.totalXP);
 
     // Update accuracy
     this.updateAccuracy(languageId, accuracy);
+    console.log('Accuracy updated to:', this.progress.user.overallAccuracy);
 
     // Update time spent
     langProgress.timeSpent += timeSpent;
 
     // Update streak
     this.updateStreak();
+    console.log('Streak updated to:', this.progress.user.currentStreak);
 
     // Update level
     this.updateLevel();
+    console.log('Level updated to:', this.progress.user.level);
 
     // Record daily stats
     this.recordDailyStats(xpEarned);
@@ -179,7 +193,12 @@ class ProgressTracker {
     // Check for achievements
     this.checkAchievements(languageId, lessonId, accuracy);
 
+    console.log('After completion - user stats:', this.progress.user);
+    console.log('Language progress after:', langProgress);
+
     this.saveProgress();
+    
+    console.log('=== END COMPLETE LESSON DEBUG ===');
     return completionData;
   }
 
@@ -373,12 +392,26 @@ class ProgressTracker {
 
   // Get user statistics
   getUserStats() {
-    return {
-      ...this.progress.user,
+    console.log('=== getUserStats DEBUG ===');
+    console.log('Raw progress.user:', this.progress.user);
+    
+    const stats = {
+      totalXP: this.progress.user.totalXP || 0,
+      currentStreak: this.progress.user.currentStreak || 0,
+      longestStreak: this.progress.user.longestStreak || 0,
+      lessonsCompleted: this.progress.user.totalLessonsCompleted || 0,
+      averageAccuracy: this.progress.user.overallAccuracy || 0,
+      totalTimeSpent: Object.values(this.progress.languages).reduce((total, lang) => total + (lang.timeSpent || 0), 0),
+      level: this.progress.user.level || 1,
       languages: Object.keys(this.progress.languages).length,
       achievements: this.progress.achievements.length,
       recentAchievements: this.progress.achievements.slice(-3)
     };
+    
+    console.log('Computed stats:', stats);
+    console.log('=== END getUserStats DEBUG ===');
+    
+    return stats;
   }
 
   // Get language statistics
