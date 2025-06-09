@@ -1,0 +1,140 @@
+.welcome-screen {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #58cc02 0%, #3ca500 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: white;
+}
+
+.welcome-content {
+  max-width: 350px;
+  width: 100%;
+  text-align: center;
+}
+
+.logo-section {
+  margin-bottom: 40px;
+}
+
+.duolingo-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.owl-character {
+  font-size: 80px;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+
+.app-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0;
+  color: white;
+  letter-spacing: -1px;
+}
+
+.tagline {
+  font-size: 16px;
+  font-weight: 400;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.illustration {
+  margin: 40px 0;
+  padding: 20px;
+}
+
+.characters {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  align-items: center;
+}
+
+.character {
+  font-size: 60px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.character-1 {
+  animation-delay: 0s;
+}
+
+.character-2 {
+  animation-delay: 0.5s;
+}
+
+.character-3 {
+  animation-delay: 1s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.welcome-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 40px;
+}
+
+.get-started-btn {
+  background: white;
+  color: #58cc02;
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 2px solid white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.get-started-btn:hover {
+  background: #f0f0f0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.get-started-btn:active {
+  transform: translateY(0);
+}
+
+.have-account-btn {
+  background: transparent;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 2px solid white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.have-account-btn:hover {
+  background: rgba(255,255,255,0.1);
+  transform: translateY(-2px);
+}
+
+.have-account-btn:active {
+  transform: translateY(0);
+} 

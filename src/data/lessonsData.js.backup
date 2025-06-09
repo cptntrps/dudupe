@@ -1,0 +1,148 @@
+export const languages = [
+  {
+    id: 'spanish',
+    name: 'Spanish',
+    flag: '🇪🇸',
+    nativeName: 'Español'
+  },
+  {
+    id: 'french',
+    name: 'French',
+    flag: '🇫🇷',
+    nativeName: 'Français'
+  },
+  {
+    id: 'german',
+    name: 'German',
+    flag: '🇩🇪',
+    nativeName: 'Deutsch'
+  },
+  {
+    id: 'italian',
+    name: 'Italian',
+    flag: '🇮🇹',
+    nativeName: 'Italiano'
+  }
+];
+
+export const lessons = {
+  spanish: [
+    {
+      id: 1,
+      title: 'Basics 1',
+      description: 'Learn basic greetings and introductions',
+      difficulty: 'beginner',
+      xp: 10,
+      exercises: [
+        {
+          id: 1,
+          type: 'multiple-choice',
+          question: 'How do you say "Hello" in Spanish?',
+          correctAnswer: 'Hola',
+          options: ['Hola', 'Adiós', 'Gracias', 'Por favor'],
+          audio: null
+        },
+        {
+          id: 2,
+          type: 'translation',
+          question: 'Translate: "Good morning"',
+          correctAnswer: 'Buenos días',
+          options: ['Buenos días', 'Buenas tardes', 'Buenas noches', 'Hasta luego'],
+          audio: null
+        },
+        {
+          id: 3,
+          type: 'multiple-choice',
+          question: 'What does "Gracias" mean?',
+          correctAnswer: 'Thank you',
+          options: ['Hello', 'Goodbye', 'Thank you', 'Please'],
+          audio: null
+        },
+        {
+          id: 4,
+          type: 'image-match',
+          question: 'Select the correct image for "Gato"',
+          correctAnswer: 'cat',
+          options: [
+            { id: 'cat', text: '🐱', label: 'Cat' },
+            { id: 'dog', text: '🐶', label: 'Dog' },
+            { id: 'bird', text: '🐦', label: 'Bird' },
+            { id: 'fish', text: '🐟', label: 'Fish' }
+          ],
+          audio: null
+        }
+      ]
+    },
+    {
+      id: 2,
+      title: 'Family',
+      description: 'Learn family member names',
+      difficulty: 'beginner',
+      xp: 15,
+      exercises: [
+        {
+          id: 1,
+          type: 'multiple-choice',
+          question: 'How do you say "Mother" in Spanish?',
+          correctAnswer: 'Madre',
+          options: ['Padre', 'Madre', 'Hermano', 'Hermana'],
+          audio: null
+        },
+        {
+          id: 2,
+          type: 'translation',
+          question: 'Translate: "My father"',
+          correctAnswer: 'Mi padre',
+          options: ['Mi madre', 'Mi padre', 'Mi hermano', 'Mi hermana'],
+          audio: null
+        },
+        {
+          id: 3,
+          type: 'fill-blank',
+          question: 'Complete: "Mi ___ es muy amable" (My sister is very kind)',
+          correctAnswer: 'hermana',
+          options: ['hermana', 'hermano', 'madre', 'padre'],
+          audio: null
+        }
+      ]
+    },
+    {
+      id: 3,
+      title: 'Colors',
+      description: 'Learn basic colors',
+      difficulty: 'beginner',
+      xp: 12,
+      exercises: [
+        {
+          id: 1,
+          type: 'multiple-choice',
+          question: 'What color is "Rojo"?',
+          correctAnswer: 'Red',
+          options: ['Blue', 'Red', 'Green', 'Yellow'],
+          audio: null
+        },
+        {
+          id: 2,
+          type: 'image-match',
+          question: 'Select the color "Azul"',
+          correctAnswer: 'blue',
+          options: [
+            { id: 'red', text: '🔴', label: 'Red' },
+            { id: 'blue', text: '🔵', label: 'Blue' },
+            { id: 'green', text: '🟢', label: 'Green' },
+            { id: 'yellow', text: '🟡', label: 'Yellow' }
+          ],
+          audio: null
+        }
+      ]
+    }
+  ]
+};
+
+export const getLessonsForLanguage = (languageId) => {
+  return lessons[languageId] || [];
+};
+
+export const getLanguageById = (languageId) => {
+  return languages.find(lang => lang.id === languageId);
+}; 
