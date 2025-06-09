@@ -12,9 +12,7 @@ const LessonInterface = () => {
     hearts, 
     loseHeart, 
     completeLesson, 
-    setCurrentLesson,
-    startExercise,
-    endExercise
+    setCurrentLesson
   } = useApp();
   
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
@@ -47,6 +45,15 @@ const LessonInterface = () => {
   // Reset state when exercise changes and start timing
   useEffect(() => {
     if (currentExercise) {
+      console.log('=== NEW EXERCISE LOADED ===');
+      console.log('Exercise Index:', currentExerciseIndex);
+      console.log('Exercise ID:', currentExercise.id);
+      console.log('Exercise Type:', currentExercise.type);
+      console.log('Question:', currentExercise.question);
+      console.log('Correct Answer:', currentExercise.correctAnswer);
+      console.log('Options:', currentExercise.options);
+      console.log('===========================');
+      
       console.log('useEffect triggered - resetting state for exercise:', currentExerciseIndex);
       setSelectedAnswer(null);
       setTypedAnswer('');
@@ -58,6 +65,7 @@ const LessonInterface = () => {
       // Initialize word lists for drag-drop and word-order exercises
       if (currentExercise.type === 'drag-drop' || currentExercise.type === 'word-order') {
         setAvailableWords([...currentExercise.words]);
+        console.log('Initialized words for', currentExercise.type, ':', currentExercise.words);
       }
       
       // Don't call startExercise here to avoid re-renders
@@ -90,8 +98,15 @@ const LessonInterface = () => {
     setTimeout(() => {
       let correct = false;
       
-      console.log('Current exercise:', currentExercise);
-      console.log('Exercise type:', currentExercise.type);
+      console.log('=== EXERCISE DETAILS ===');
+      console.log('Exercise ID:', currentExercise.id);
+      console.log('Exercise Type:', currentExercise.type);
+      console.log('Question:', currentExercise.question);
+      console.log('Correct Answer:', currentExercise.correctAnswer);
+      console.log('Available Options:', currentExercise.options);
+      console.log('Current Exercise Index:', currentExerciseIndex);
+      console.log('Total Exercises:', currentLesson.exercises.length);
+      console.log('========================');
       
       if (currentExercise.type === 'image-match') {
         correct = selectedAnswer === currentExercise.correctAnswer;
@@ -109,6 +124,12 @@ const LessonInterface = () => {
         correct = selectedAnswer === currentExercise.correctAnswer;
         console.log('Multiple choice - Selected:', selectedAnswer, 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
       }
+
+      console.log('=== ANSWER VALIDATION ===');
+      console.log('User Answer:', selectedAnswer || typedAnswer || draggedWords.join(' ') || wordOrderAnswer.join(' '));
+      console.log('Expected Answer:', currentExercise.correctAnswer);
+      console.log('Is Correct:', correct);
+      console.log('========================');
 
       console.log('Setting feedback - Correct:', correct);
       console.log('About to set showFeedback to true and isProcessing to false');
@@ -134,7 +155,7 @@ const LessonInterface = () => {
         if (correct) {
           console.log('Incrementing correct answers');
           setCorrectAnswers(prev => {
-            console.log('Previous correct answers:', prev);
+            console.log('Previous correct answers:', prev, '→ New:', prev + 1);
             return prev + 1;
           });
         } else {
@@ -148,8 +169,12 @@ const LessonInterface = () => {
   };
 
   const handleContinue = () => {
-    console.log('handleContinue called');
-    console.log('Current exercise index:', currentExerciseIndex, 'Total exercises:', currentLesson.exercises.length);
+    console.log('=== CONTINUE BUTTON CLICKED ===');
+    console.log('Current exercise index:', currentExerciseIndex);
+    console.log('Total exercises:', currentLesson.exercises.length);
+    console.log('Current question was:', currentExercise.question);
+    console.log('Correct answers so far:', correctAnswers);
+    console.log('==============================');
     
     // Reset states for next exercise
     setShowFeedback(false);
@@ -161,6 +186,7 @@ const LessonInterface = () => {
     
     if (currentExerciseIndex < currentLesson.exercises.length - 1) {
       console.log('Moving to next exercise');
+      console.log('Next exercise will be:', currentLesson.exercises[currentExerciseIndex + 1].question);
       setCurrentExerciseIndex(prev => prev + 1);
       
       // Reset available words for drag-drop exercises
@@ -168,12 +194,18 @@ const LessonInterface = () => {
         setAvailableWords([...currentLesson.exercises[currentExerciseIndex + 1].words]);
       }
     } else {
-      console.log('Lesson complete - calculating stats');
+      console.log('=== LESSON COMPLETE ===');
+      console.log('Final stats calculation...');
       
       const accuracy = Math.round((correctAnswers / currentLesson.exercises.length) * 100);
       const timeSpent = lessonStartTime ? (Date.now() - lessonStartTime) / 1000 / 60 : 0;
       
-      console.log('Lesson completion data:', { accuracy, timeSpent, correctAnswers, totalQuestions: currentLesson.exercises.length });
+      console.log('Lesson completion data:');
+      console.log('- Correct answers:', correctAnswers);
+      console.log('- Total questions:', currentLesson.exercises.length);
+      console.log('- Accuracy:', accuracy + '%');
+      console.log('- Time spent:', timeSpent.toFixed(2), 'minutes');
+      console.log('======================');
       
       try {
         console.log('Calling completeLesson');
