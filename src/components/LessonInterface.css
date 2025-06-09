@@ -34,7 +34,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 40px 20px 20px;
+  padding: 40px 20px 120px;
 }
 
 .exercise-container {
@@ -97,6 +97,11 @@
   color: #1cb0f6;
 }
 
+.option-button.disabled {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
 .image-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -124,6 +129,11 @@
 .image-option.selected {
   border-color: #1cb0f6;
   background: #ddf4ff;
+}
+
+.image-option.disabled {
+  pointer-events: none;
+  opacity: 0.7;
 }
 
 .image-icon {
@@ -184,6 +194,21 @@
   padding: 20px 0;
 }
 
+/* New fixed footer */
+.lesson-footer-fixed {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid #e5e5e5;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
 .check-button,
 .continue-button {
   min-width: 200px;
@@ -211,6 +236,13 @@
 .check-button.active:hover {
   background: #1a9bd6;
   transform: translateY(-2px);
+}
+
+.check-button:disabled {
+  background: #e5e5e5;
+  color: #afafaf;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .continue-button {
@@ -446,4 +478,39 @@
     padding: 6px 10px;
     font-size: 14px;
   }
+}
+
+/* Lesson not found styles */
+.lesson-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.lesson-not-found h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #3c3c3c;
+  margin: 0 0 20px 0;
+}
+
+.lesson-not-found button {
+  background: #58cc02;
+  color: white;
+  padding: 16px 32px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lesson-not-found button:hover {
+  background: #4caf00;
+  transform: translateY(-2px);
 } 

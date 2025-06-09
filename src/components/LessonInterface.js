@@ -23,6 +23,7 @@ const LessonInterface = () => {
   const [isCorrect, setIsCorrect] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [lessonStartTime, setLessonStartTime] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   
   // New state for advanced exercise types
   const [typedAnswer, setTypedAnswer] = useState('');
@@ -50,6 +51,7 @@ const LessonInterface = () => {
       setDraggedWords([]);
       setWordOrderAnswer([]);
       setShowFeedback(false);
+      setIsProcessing(false);
       
       // Initialize word lists for drag-drop and word-order exercises
       if (currentExercise.type === 'drag-drop' || currentExercise.type === 'word-order') {
@@ -62,59 +64,69 @@ const LessonInterface = () => {
   }, [currentExerciseIndex, currentExercise, startExercise]);
 
   const handleAnswerSelect = (answer) => {
-    if (showFeedback) return;
+    if (showFeedback || isProcessing) return;
     setSelectedAnswer(answer);
   };
 
   const handleCheckAnswer = () => {
     console.log('handleCheckAnswer called'); // Debug log
     
+    if (isProcessing || showFeedback) {
+      console.log('Already processing or showing feedback, returning early');
+      return;
+    }
+    
     if (!selectedAnswer && !typedAnswer && draggedWords.length === 0 && wordOrderAnswer.length === 0) {
       console.log('No answer provided, returning early'); // Debug log
       return;
     }
 
-    let correct = false;
+    setIsProcessing(true);
     
-    console.log('Current exercise:', currentExercise); // Debug log
-    console.log('Exercise type:', currentExercise.type); // Debug log
-    
-    if (currentExercise.type === 'image-match') {
-      correct = selectedAnswer === currentExercise.correctAnswer;
-      console.log('Image match - Selected:', selectedAnswer, 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
-    } else if (currentExercise.type === 'typing') {
-      correct = typedAnswer.toLowerCase().trim() === currentExercise.correctAnswer.toLowerCase().trim();
-      console.log('Typing - Typed:', typedAnswer, 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
-    } else if (currentExercise.type === 'drag-drop') {
-      correct = draggedWords.join(' ') === currentExercise.correctAnswer;
-      console.log('Drag-drop - Dragged:', draggedWords.join(' '), 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
-    } else if (currentExercise.type === 'word-order') {
-      correct = wordOrderAnswer.join(' ') === currentExercise.correctAnswer;
-      console.log('Word order - Answer:', wordOrderAnswer.join(' '), 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
-    } else {
-      correct = selectedAnswer === currentExercise.correctAnswer;
-      console.log('Multiple choice - Selected:', selectedAnswer, 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
-    }
-
-    console.log('Setting feedback - Correct:', correct); // Debug log
-    setIsCorrect(correct);
-    setShowFeedback(true);
-
-    try {
-      // Record exercise performance with timing
-      console.log('Calling endExercise'); // Debug log
-      endExercise(currentExercise.type, correct);
-
-      if (correct) {
-        console.log('Incrementing correct answers'); // Debug log
-        setCorrectAnswers(prev => prev + 1);
+    setTimeout(() => {
+      let correct = false;
+      
+      console.log('Current exercise:', currentExercise); // Debug log
+      console.log('Exercise type:', currentExercise.type); // Debug log
+      
+      if (currentExercise.type === 'image-match') {
+        correct = selectedAnswer === currentExercise.correctAnswer;
+        console.log('Image match - Selected:', selectedAnswer, 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
+      } else if (currentExercise.type === 'typing') {
+        correct = typedAnswer.toLowerCase().trim() === currentExercise.correctAnswer.toLowerCase().trim();
+        console.log('Typing - Typed:', typedAnswer, 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
+      } else if (currentExercise.type === 'drag-drop') {
+        correct = draggedWords.join(' ') === currentExercise.correctAnswer;
+        console.log('Drag-drop - Dragged:', draggedWords.join(' '), 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
+      } else if (currentExercise.type === 'word-order') {
+        correct = wordOrderAnswer.join(' ') === currentExercise.correctAnswer;
+        console.log('Word order - Answer:', wordOrderAnswer.join(' '), 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
       } else {
-        console.log('Losing heart'); // Debug log
-        loseHeart();
+        correct = selectedAnswer === currentExercise.correctAnswer;
+        console.log('Multiple choice - Selected:', selectedAnswer, 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
       }
-    } catch (error) {
-      console.error('Error in handleCheckAnswer:', error); // Debug log
-    }
+
+      console.log('Setting feedback - Correct:', correct); // Debug log
+      setIsCorrect(correct);
+      setShowFeedback(true);
+      setIsProcessing(false);
+
+      try {
+        // Record exercise performance with timing
+        console.log('Calling endExercise'); // Debug log
+        endExercise(currentExercise.type, correct);
+
+        if (correct) {
+          console.log('Incrementing correct answers'); // Debug log
+          setCorrectAnswers(prev => prev + 1);
+        } else {
+          console.log('Losing heart'); // Debug log
+          loseHeart();
+        }
+      } catch (error) {
+        console.error('Error in handleCheckAnswer:', error); // Debug log
+      }
+    }, 100); // Small delay to ensure UI updates properly
   };
 
   const handleContinue = () => {
@@ -124,11 +136,6 @@ const LessonInterface = () => {
     if (currentExerciseIndex < currentLesson.exercises.length - 1) {
       console.log('Moving to next exercise'); // Debug log
       setCurrentExerciseIndex(prev => prev + 1);
-      setSelectedAnswer(null);
-      setTypedAnswer('');
-      setDraggedWords([]);
-      setWordOrderAnswer([]);
-      setShowFeedback(false);
     } else {
       console.log('Lesson complete - calculating stats'); // Debug log
       
@@ -161,23 +168,29 @@ const LessonInterface = () => {
     }
   };
 
-  const handleClose = () => {
-    navigate('/lessons');
+  const handleExit = () => {
+    const confirmExit = window.confirm('Are you sure you want to exit this lesson? Your progress will be lost. (Tem certeza de que deseja sair desta lição? Seu progresso será perdido.)');
+    if (confirmExit) {
+      navigate('/lessons');
+    }
   };
 
   // Handlers for new exercise types
   const handleWordDrag = (word) => {
+    if (showFeedback || isProcessing) return;
     setDraggedWords([...draggedWords, word]);
     setAvailableWords(availableWords.filter(w => w !== word));
   };
 
   const handleWordRemove = (wordIndex) => {
+    if (showFeedback || isProcessing) return;
     const word = draggedWords[wordIndex];
     setDraggedWords(draggedWords.filter((_, index) => index !== wordIndex));
     setAvailableWords([...availableWords, word]);
   };
 
   const handleWordOrderClick = (word) => {
+    if (showFeedback || isProcessing) return;
     if (wordOrderAnswer.includes(word)) {
       // Remove word from answer
       setWordOrderAnswer(wordOrderAnswer.filter(w => w !== word));
@@ -195,7 +208,14 @@ const LessonInterface = () => {
   };
 
   if (!currentLesson) {
-    return <div>Lesson not found</div>;
+    return (
+      <div className="lesson-interface">
+        <div className="lesson-not-found">
+          <h2>Lesson not found</h2>
+          <button onClick={() => navigate('/lessons')}>Back to Lessons</button>
+        </div>
+      </div>
+    );
   }
 
   if (hearts === 0) {
@@ -216,7 +236,7 @@ const LessonInterface = () => {
   return (
     <div className="lesson-interface">
       <div className="lesson-header">
-        <button className="close-button" onClick={handleClose}>×</button>
+        <button className="close-button" onClick={handleExit}>×</button>
         <div className="progress-bar">
           <div className="progress-fill" style={{ width: `${progress}%` }}></div>
         </div>
@@ -241,7 +261,7 @@ const LessonInterface = () => {
                 {currentExercise.options.map((option) => (
                   <div
                     key={option.id}
-                    className={`image-option ${selectedAnswer === option.id ? 'selected' : ''}`}
+                    className={`image-option ${selectedAnswer === option.id ? 'selected' : ''} ${showFeedback || isProcessing ? 'disabled' : ''}`}
                     onClick={() => handleAnswerSelect(option.id)}
                   >
                     <div className="image-icon">{option.text}</div>
@@ -257,7 +277,7 @@ const LessonInterface = () => {
                   value={typedAnswer}
                   onChange={(e) => setTypedAnswer(e.target.value)}
                   placeholder="Type your answer here... (Digite sua resposta aqui...)"
-                  disabled={showFeedback}
+                  disabled={showFeedback || isProcessing}
                 />
               </div>
             ) : currentExercise.type === 'drag-drop' ? (
@@ -282,7 +302,7 @@ const LessonInterface = () => {
                       key={index}
                       className="draggable-word"
                       onClick={() => handleWordDrag(word)}
-                      disabled={showFeedback}
+                      disabled={showFeedback || isProcessing}
                     >
                       {word}
                     </button>
@@ -304,7 +324,7 @@ const LessonInterface = () => {
                       key={index}
                       className={`word-option ${wordOrderAnswer.includes(word) ? 'selected' : ''}`}
                       onClick={() => handleWordOrderClick(word)}
-                      disabled={showFeedback}
+                      disabled={showFeedback || isProcessing}
                     >
                       {word}
                     </button>
@@ -316,8 +336,9 @@ const LessonInterface = () => {
                 {currentExercise.options.map((option, index) => (
                   <button
                     key={index}
-                    className={`option-button ${selectedAnswer === option ? 'selected' : ''}`}
+                    className={`option-button ${selectedAnswer === option ? 'selected' : ''} ${showFeedback || isProcessing ? 'disabled' : ''}`}
                     onClick={() => handleAnswerSelect(option)}
+                    disabled={showFeedback || isProcessing}
                   >
                     {option}
                   </button>
@@ -332,29 +353,30 @@ const LessonInterface = () => {
                 {isCorrect ? '✅' : '❌'}
               </div>
               <div className="feedback-text">
-                {isCorrect ? 'Great job!' : `Correct answer: ${currentExercise.correctAnswer}`}
+                {isCorrect ? 'Great job! (Muito bem!)' : `Correct answer: ${currentExercise.correctAnswer} (Resposta correta: ${currentExercise.correctAnswer})`}
               </div>
             </div>
           )}
         </div>
+      </div>
 
-        <div className="lesson-footer">
-          {!showFeedback && (
-            <button
-              className={`check-button ${isAnswerReady() ? 'active' : ''}`}
-              onClick={handleCheckAnswer}
-              disabled={!isAnswerReady()}
-            >
-              CHECK
-            </button>
-          )}
+      {/* Fixed bottom footer with buttons */}
+      <div className="lesson-footer-fixed">
+        {!showFeedback && (
+          <button
+            className={`check-button ${isAnswerReady() && !isProcessing ? 'active' : ''}`}
+            onClick={handleCheckAnswer}
+            disabled={!isAnswerReady() || isProcessing}
+          >
+            {isProcessing ? 'CHECKING...' : 'CHECK'}
+          </button>
+        )}
 
-          {showFeedback && (
-            <button className="continue-button" onClick={handleContinue}>
-              CONTINUE
-            </button>
-          )}
-        </div>
+        {showFeedback && (
+          <button className="continue-button" onClick={handleContinue}>
+            {currentExerciseIndex < currentLesson.exercises.length - 1 ? 'CONTINUE' : 'FINISH LESSON'}
+          </button>
+        )}
       </div>
     </div>
   );
