@@ -43,6 +43,7 @@ const LessonInterface = () => {
   }, [currentLesson, setCurrentLesson]);
 
   // Reset state when exercise changes and start timing
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (currentExercise) {
       console.log('=== NEW EXERCISE LOADED ===');

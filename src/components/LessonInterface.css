@@ -470,21 +470,275 @@
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .typing-input {
-    font-size: 16px;
-    padding: 12px 16px;
+  .lesson-interface {
+    /* Ensure full viewport on mobile */
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
   }
-  
+
+  .lesson-header {
+    padding: 15px;
+    gap: 12px;
+    /* Safe area support for iPhone notch */
+    padding-top: max(15px, env(safe-area-inset-top));
+    padding-left: max(15px, env(safe-area-inset-left));
+    padding-right: max(15px, env(safe-area-inset-right));
+  }
+
+  .close-button {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+    /* Larger touch target for mobile */
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .lesson-content {
+    padding: 20px 15px 160px; /* More bottom padding for mobile footer */
+    min-height: calc(100vh - 140px);
+    min-height: calc(100dvh - 140px);
+  }
+
+  .exercise-container {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .question-section {
+    margin-bottom: 30px;
+  }
+
+  .question {
+    font-size: 20px;
+    line-height: 1.4;
+    padding: 0 10px;
+  }
+
+  .answers-section {
+    gap: 12px;
+    margin-bottom: 30px;
+  }
+
+  .option-button {
+    padding: 16px 18px;
+    font-size: 15px;
+    /* Better touch targets */
+    min-height: 52px;
+    border-radius: 10px;
+  }
+
+  .image-options {
+    gap: 12px;
+  }
+
+  .image-option {
+    padding: 16px;
+    border-radius: 10px;
+    min-height: 100px;
+  }
+
+  .image-icon {
+    font-size: 40px;
+    margin-bottom: 8px;
+  }
+
+  .image-label {
+    font-size: 13px;
+  }
+
+  .feedback {
+    padding: 16px;
+    margin-top: 15px;
+    border-radius: 10px;
+  }
+
+  .feedback-text {
+    font-size: 14px;
+  }
+
+  .lesson-footer-fixed {
+    padding: 16px 20px;
+    /* Safe area support for iPhone home indicator */
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+  }
+
+  .check-button,
+  .continue-button {
+    min-width: 160px;
+    width: 100%;
+    max-width: 300px;
+    padding: 14px 24px;
+    font-size: 15px;
+    border-radius: 10px;
+    /* Better touch target */
+    min-height: 48px;
+  }
+
+  .typing-input {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px 16px;
+    border-radius: 10px;
+    min-height: 48px;
+  }
+
   .draggable-word,
   .word-option {
-    padding: 8px 12px;
+    padding: 10px 14px;
     font-size: 14px;
+    border-radius: 8px;
+    min-height: 40px;
   }
-  
+
   .dropped-word,
   .ordered-word {
-    padding: 6px 10px;
+    padding: 8px 12px;
     font-size: 14px;
+    border-radius: 6px;
+    min-height: 36px;
+  }
+
+  .drop-zone {
+    min-height: 80px;
+    padding: 16px;
+  }
+
+  .word-bank,
+  .word-options {
+    gap: 8px;
+  }
+
+  .out-of-hearts,
+  .lesson-not-found {
+    padding: 20px 15px;
+    /* Safe area support */
+    padding-top: max(20px, env(safe-area-inset-top));
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+}
+
+/* iPhone specific optimizations */
+@media (max-width: 480px) {
+  .lesson-header {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .question {
+    font-size: 18px;
+    padding: 0 5px;
+  }
+
+  .option-button {
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+
+  .image-options {
+    gap: 10px;
+  }
+
+  .image-option {
+    padding: 12px;
+    min-height: 90px;
+  }
+
+  .image-icon {
+    font-size: 36px;
+    margin-bottom: 6px;
+  }
+
+  .check-button,
+  .continue-button {
+    min-width: 140px;
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+
+  .lesson-footer-fixed {
+    padding: 14px 15px;
+  }
+}
+
+/* Very small screens (iPhone SE, etc.) */
+@media (max-width: 375px) {
+  .lesson-content {
+    padding: 15px 10px 150px;
+  }
+
+  .question {
+    font-size: 16px;
+  }
+
+  .option-button {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+
+  .check-button,
+  .continue-button {
+    min-width: 120px;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+}
+
+/* Landscape mode optimizations for mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .lesson-content {
+    padding: 15px 20px 120px;
+  }
+
+  .question-section {
+    margin-bottom: 20px;
+  }
+
+  .question {
+    font-size: 18px;
+  }
+
+  .answers-section {
+    margin-bottom: 20px;
+  }
+
+  .lesson-footer-fixed {
+    padding: 12px 20px;
+  }
+}
+
+/* Touch improvements */
+@media (hover: none) and (pointer: coarse) {
+  .option-button:hover,
+  .image-option:hover {
+    /* Remove hover effects on touch devices */
+    border-color: #e5e5e5;
+    background: white;
+    transform: none;
+  }
+
+  .option-button.selected:hover,
+  .image-option.selected:hover {
+    border-color: #1cb0f6;
+    background: #ddf4ff;
+  }
+
+  .check-button.active:hover {
+    background: #1cb0f6;
+    transform: none;
+  }
+
+  .continue-button:hover {
+    background: #58cc02;
+    transform: none;
+  }
+}
+
+/* Prevent zoom on iOS when focusing inputs */
+@supports (-webkit-touch-callout: none) {
+  .typing-input {
+    font-size: 16px !important;
   }
 }
 
