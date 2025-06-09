@@ -24,6 +24,7 @@ const LessonInterface = () => {
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [lessonStartTime, setLessonStartTime] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [forceUpdate, setForceUpdate] = useState(0); // Force re-render mechanism
   
   // New state for advanced exercise types
   const [typedAnswer, setTypedAnswer] = useState('');
@@ -111,19 +112,30 @@ const LessonInterface = () => {
       console.log('Setting feedback - Correct:', correct);
       console.log('About to set showFeedback to true and isProcessing to false');
       
+      // Update states
       setIsCorrect(correct);
-      setShowFeedback(true);
       setIsProcessing(false);
+      
+      // Force state update with a callback to ensure it happens
+      setShowFeedback(true);
+      
+      console.log('State should now be updated - showFeedback: true, isProcessing: false');
 
-      console.log('After setState - showFeedback should be true, isProcessing should be false');
+      // Force re-render to ensure UI updates
+      setForceUpdate(prev => prev + 1);
+      console.log('Forced component re-render');
 
+      // Handle exercise completion
       try {
         console.log('Calling endExercise');
         endExercise(currentExercise.type, correct);
 
         if (correct) {
           console.log('Incrementing correct answers');
-          setCorrectAnswers(prev => prev + 1);
+          setCorrectAnswers(prev => {
+            console.log('Previous correct answers:', prev);
+            return prev + 1;
+          });
         } else {
           console.log('Losing heart');
           loseHeart();
@@ -131,7 +143,7 @@ const LessonInterface = () => {
       } catch (error) {
         console.error('Error in handleCheckAnswer:', error);
       }
-    }, 500); // Increased delay for better UX
+    }, 100); // Reduced delay to see if timing is the issue
   };
 
   const handleContinue = () => {
@@ -378,25 +390,31 @@ const LessonInterface = () => {
 
       {/* Fixed bottom footer with buttons */}
       <div className="lesson-footer-fixed">
-        {console.log('Render - showFeedback:', showFeedback, 'isProcessing:', isProcessing, 'isAnswerReady:', isAnswerReady())}
+        {console.log('=== RENDER DEBUG ===')}
+        {console.log('showFeedback:', showFeedback)}
+        {console.log('isProcessing:', isProcessing)}
+        {console.log('isAnswerReady():', isAnswerReady())}
+        {console.log('forceUpdate:', forceUpdate)}
+        {console.log('=====================')}
         
-        {!showFeedback && (
-          <button
-            className={`check-button ${isAnswerReady() && !isProcessing ? 'active' : ''}`}
-            onClick={handleCheckAnswer}
-            disabled={!isAnswerReady() || isProcessing}
-          >
-            {isProcessing ? 'CHECKING...' : 'CHECK'}
-          </button>
-        )}
-
-        {showFeedback && (
-          <>
-            {console.log('Showing CONTINUE button')}
+        {!showFeedback ? (
+          <div>
+            {console.log('Rendering CHECK button')}
+            <button
+              className={`check-button ${isAnswerReady() && !isProcessing ? 'active' : ''}`}
+              onClick={handleCheckAnswer}
+              disabled={!isAnswerReady() || isProcessing}
+            >
+              {isProcessing ? 'CHECKING...' : 'CHECK'}
+            </button>
+          </div>
+        ) : (
+          <div>
+            {console.log('Rendering CONTINUE button - showFeedback is TRUE')}
             <button className="continue-button" onClick={handleContinue}>
               {currentExerciseIndex < currentLesson.exercises.length - 1 ? 'CONTINUE' : 'FINISH LESSON'}
             </button>
-          </>
+          </div>
         )}
       </div>
     </div>
