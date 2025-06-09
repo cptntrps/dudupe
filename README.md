@@ -38,8 +38,8 @@ A modern language learning application inspired by Duolingo, built with React. L
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/gui/DuolingoDupe.git
-   cd DuolingoDupe
+   git clone https://github.com/cptntrps/dudupe.git
+   cd dudupe
    ```
 
 2. **Install dependencies**
@@ -119,7 +119,7 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## 👨‍💻 Author
 
-Created by **gui** - A passionate developer building educational tools.
+Created by **cptntrps** - A passionate developer building educational tools.
 
 ---
 

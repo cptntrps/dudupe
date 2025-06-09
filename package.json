@@ -2,7 +2,7 @@
   "name": "duolingo-clone",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://gui.github.io/DuolingoDupe",
+  "homepage": "https://cptntrps.github.io/dudupe",
   "dependencies": {
     "howler": "^2.2.3",
     "react": "^18.2.0",
