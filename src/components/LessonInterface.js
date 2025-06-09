@@ -45,34 +45,26 @@ const LessonInterface = () => {
   // Reset state when exercise changes and start timing
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (currentExercise) {
-      console.log('=== NEW EXERCISE LOADED ===');
-      console.log('Exercise Index:', currentExerciseIndex);
-      console.log('Exercise ID:', currentExercise.id);
-      console.log('Exercise Type:', currentExercise.type);
-      console.log('Question:', currentExercise.question);
-      console.log('Correct Answer:', currentExercise.correctAnswer);
-      console.log('Options:', currentExercise.options);
-      console.log('===========================');
+    if (currentExerciseIndex >= 0 && currentLesson?.exercises) {
+      const exercise = currentLesson.exercises[currentExerciseIndex];
+      if (exercise?.type === 'drag-drop' && exercise.words) {
+        setAvailableWords([...exercise.words]);
+      }
       
-      console.log('useEffect triggered - resetting state for exercise:', currentExerciseIndex);
-      setSelectedAnswer(null);
-      setTypedAnswer('');
-      setDraggedWords([]);
-      setWordOrderAnswer([]);
-      setShowFeedback(false);
-      setIsProcessing(false);
-      
-      // Initialize word lists for drag-drop and word-order exercises
-      if (currentExercise.type === 'drag-drop' || currentExercise.type === 'word-order') {
-        setAvailableWords([...currentExercise.words]);
-        console.log('Initialized words for', currentExercise.type, ':', currentExercise.words);
+      // Reset states for new exercise
+      if (exercise) {
+        setSelectedAnswer(null);
+        setTypedAnswer('');
+        setDraggedWords([]);
+        setWordOrderAnswer([]);
+        setShowFeedback(false);
+        setIsProcessing(false);
       }
       
       // Don't call startExercise here to avoid re-renders
       // startExercise();
     }
-  }, [currentExerciseIndex]); // Only depend on exercise index, not currentExercise or startExercise
+  }, [currentExerciseIndex, currentLesson, currentExercise]); // Added currentExercise dependency
 
   const handleAnswerSelect = (answer) => {
     if (showFeedback || isProcessing) return;

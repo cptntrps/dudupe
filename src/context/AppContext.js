@@ -111,15 +111,27 @@ export const AppProvider = ({ children }) => {
     if (!user) return;
     
     const localProgress = progressTracker.exportProgress();
+    const stats = progressTracker.getUserStats();
+    
+    console.log('Syncing progress to cloud:', {
+      totalXP: stats.totalXP,
+      currentStreak: stats.currentStreak,
+      lessonsCompleted: stats.lessonsCompleted
+    });
+    
     await authService.updateUserData(user.uid, {
       progress: localProgress,
-      totalXP: userStats.totalXP,
-      currentStreak: userStats.currentStreak,
-      longestStreak: userStats.longestStreak,
-      lessonsCompleted: userStats.lessonsCompleted,
-      averageAccuracy: userStats.averageAccuracy,
-      totalTimeSpent: userStats.totalTimeSpent
+      totalXP: stats.totalXP,
+      currentStreak: stats.currentStreak,
+      longestStreak: stats.longestStreak,
+      lessonsCompleted: stats.lessonsCompleted,
+      averageAccuracy: stats.averageAccuracy,
+      totalTimeSpent: stats.totalTimeSpent,
+      level: stats.level,
+      lastSyncAt: new Date().toISOString()
     });
+    
+    console.log('Progress synced to cloud successfully');
   };
 
   // Heart management
@@ -144,10 +156,17 @@ export const AppProvider = ({ children }) => {
       return;
     }
 
+    console.log('=== COMPLETING LESSON ===');
+    console.log('Lesson ID:', lessonId);
+    console.log('Accuracy:', accuracy);
+    console.log('Time spent:', timeSpent);
+
     // Calculate XP based on lesson difficulty and accuracy
     const baseXP = currentLesson?.xp || 15;
     const accuracyBonus = Math.floor((accuracy / 100) * baseXP * 0.5);
     const totalXP = baseXP + accuracyBonus;
+
+    console.log('XP calculation:', { baseXP, accuracyBonus, totalXP });
 
     // Record completion in progress tracker
     const completionData = progressTracker.completeLesson(
@@ -157,6 +176,8 @@ export const AppProvider = ({ children }) => {
       accuracy,
       timeSpent
     );
+
+    console.log('Progress tracker updated:', completionData);
 
     // Check for new achievements
     const newAchievements = progressTracker.checkAchievements(
@@ -177,9 +198,18 @@ export const AppProvider = ({ children }) => {
 
     // Sync to cloud if user is authenticated
     if (user) {
+      console.log('Syncing progress to Firestore...');
       await syncProgressToCloud();
+      
+      // Refresh user data from Firestore to update UI
+      const userDataResult = await authService.getUserData(user.uid);
+      if (userDataResult.success) {
+        setUserData(userDataResult.data);
+        console.log('User data refreshed from Firestore:', userDataResult.data);
+      }
     }
 
+    console.log('=== LESSON COMPLETION DONE ===');
     return completionData;
   };
 
