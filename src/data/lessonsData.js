@@ -6129,10 +6129,12 @@ export const lessons = {
 export const getLessonsForLanguage = (languageId) => {
   const originalLessons = lessons[languageId] || [];
   
-  // Filter out all exercises that are not multiple-choice
+  // Keep simple exercise types that work well: multiple-choice, translation, fill-blank
+  const allowedTypes = ['multiple-choice', 'translation', 'fill-blank'];
+  
   const filteredLessons = originalLessons.map(lesson => ({
     ...lesson,
-    exercises: lesson.exercises.filter(exercise => exercise.type === 'multiple-choice')
+    exercises: lesson.exercises.filter(exercise => allowedTypes.includes(exercise.type))
   })).filter(lesson => lesson.exercises.length > 0); // Remove lessons with no exercises left
   
   return filteredLessons;
