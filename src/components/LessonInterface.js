@@ -119,13 +119,30 @@ const LessonInterface = () => {
         correct = draggedWords.join(' ') === currentExercise.correctAnswer;
         console.log('Drag-drop - Dragged:', draggedWords.join(' '), 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
       } else if (currentExercise.type === 'word-order') {
-        const userAnswer = wordOrderAnswer.join(' ').trim();
+        // Smart join function that handles punctuation properly
+        const smartJoin = (words) => {
+          if (words.length === 0) return '';
+          
+          let result = words[0];
+          for (let i = 1; i < words.length; i++) {
+            const word = words[i];
+            // Don't add space before punctuation marks
+            if (word.match(/^[.!?,:;]$/)) {
+              result += word;
+            } else {
+              result += ' ' + word;
+            }
+          }
+          return result;
+        };
+        
+        const userAnswer = smartJoin(wordOrderAnswer).trim();
         const correctAnswer = currentExercise.correctAnswer.trim();
         correct = userAnswer === correctAnswer;
         
         console.log('=== WORD ORDER DETAILED DEBUG ===');
         console.log('User selected words array:', wordOrderAnswer);
-        console.log('User answer (joined):', `"${userAnswer}"`);
+        console.log('User answer (smart joined):', `"${userAnswer}"`);
         console.log('Expected answer:', `"${correctAnswer}"`);
         console.log('Length comparison:', userAnswer.length, 'vs', correctAnswer.length);
         console.log('Character by character comparison:');
