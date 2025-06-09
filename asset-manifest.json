@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/dudupe/static/css/main.bd53fe8e.css",
+    "main.js": "/dudupe/static/js/main.2ff32f41.js",
+    "index.html": "/dudupe/index.html",
+    "main.bd53fe8e.css.map": "/dudupe/static/css/main.bd53fe8e.css.map",
+    "main.2ff32f41.js.map": "/dudupe/static/js/main.2ff32f41.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.bd53fe8e.css",
+    "static/js/main.2ff32f41.js"
+  ]
+}
