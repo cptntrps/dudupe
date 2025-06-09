@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider, useApp } from './context/AppContext';
 import WelcomeScreen from './components/WelcomeScreen';
@@ -12,7 +12,8 @@ import AchievementNotification from './components/AchievementNotification';
 import './App.css';
 
 function AppContent() {
-  const { user, loading } = useApp();
+  const { user, loading, handleAuthSuccess, handleLogout } = useApp();
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   if (loading) {
     return (
@@ -22,16 +23,46 @@ function AppContent() {
 
   return (
     <div className="App">
-      {!user && <AuthModal />}
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onAuthSuccess={(user) => {
+          handleAuthSuccess(user);
+          setShowAuthModal(false);
+        }}
+      />
+      
+      {/* User Header - shown when logged in */}
       {user && (
         <div className="user-header">
           <div className="app-title-small">
             <span className="luna-icon">🦊</span>
             <span>Lulearn</span>
           </div>
-          <UserProfile />
+          <UserProfile 
+            user={user}
+            onLogout={handleLogout}
+          />
         </div>
       )}
+      
+      {/* Login Button - shown when NOT logged in */}
+      {!user && (
+        <div className="guest-header">
+          <div className="app-title-small">
+            <span className="luna-icon">🦊</span>
+            <span>Lulearn</span>
+          </div>
+          <button 
+            className="login-btn"
+            onClick={() => setShowAuthModal(true)}
+          >
+            Login / Sign Up
+          </button>
+        </div>
+      )}
+      
       <AchievementNotification />
       
       <Routes>

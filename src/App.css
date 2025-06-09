@@ -29,6 +29,17 @@ body {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+/* Guest Header - for non-logged in users */
+.guest-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: white;
+  border-bottom: 1px solid #e5e5e5;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
 .app-title-small {
   display: flex;
   align-items: center;
@@ -40,7 +51,29 @@ body {
 
 .luna-icon {
   font-size: 24px;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+/* Login Button */
+.login-btn {
+  background: linear-gradient(135deg, #58CC02 0%, #89E219 100%);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(88, 204, 2, 0.3);
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(88, 204, 2, 0.4);
+}
+
+.login-btn:active {
+  transform: translateY(0);
 }
 
 /* Loading Styles */
