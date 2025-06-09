@@ -355,7 +355,7 @@ class ProgressTracker {
 
   // Clear all progress
   clearAllProgress() {
-    if (confirm('Are you sure you want to clear all progress? This cannot be undone.')) {
+    if (window.confirm('Are you sure you want to clear all progress? This cannot be undone.')) {
       localStorage.removeItem(this.storageKey);
       this.initializeProgress();
       return true;
