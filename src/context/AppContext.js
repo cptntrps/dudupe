@@ -75,7 +75,7 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     if (!authChecked) return; // Wait for auth check to complete
     
-    const savedData = localStorage.getItem('duolingo-clone-data');
+    const savedData = localStorage.getItem('lulearn-data');
     if (savedData) {
       try {
         const data = JSON.parse(savedData);
@@ -350,7 +350,9 @@ export const AppProvider = ({ children }) => {
     gainXP,
     xp: userStats.totalXP,
     streak: userStats.currentStreak,
-    completedLessons: new Set() // For backward compatibility
+    completedLessons: new Set(), // For backward compatibility
+    title: "🎉 Welcome to Lulearn!",
+    message: "Start your language learning journey with Luna the Fox! Complete lessons, earn XP, and unlock achievements."
   };
 
   return (

@@ -1,54 +1,38 @@
 .language-selection {
-  min-height: 100vh;
-  background: white;
-  display: flex;
-  flex-direction: column;
-}
-
-.language-selection .screen-header {
-  padding: 20px;
-  border-bottom: 1px solid #e5e5e5;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.language-selection .screen-header h2 {
-  font-size: 18px;
-  font-weight: 700;
-  color: #3c3c3c;
-  margin: 0;
-}
-
-.language-content {
-  flex: 1;
+  max-width: 500px;
+  margin: 0 auto;
   padding: 40px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   text-align: center;
 }
 
-.owl-mascot {
-  font-size: 80px;
+.selection-header {
+  margin-bottom: 40px;
+}
+
+.luna-mascot {
+  font-size: 64px;
   margin-bottom: 20px;
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
 }
 
-.selection-text {
-  font-size: 22px;
-  font-weight: 600;
+.selection-header h2 {
+  font-size: 24px;
+  font-weight: 700;
   color: #3c3c3c;
-  margin-bottom: 40px;
+  margin-bottom: 10px;
+}
+
+.selection-header p {
+  font-size: 16px;
+  color: #777;
+  margin-bottom: 0;
 }
 
 .languages-grid {
-  width: 100%;
-  max-width: 400px;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 16px;
-  margin-bottom: 40px;
+  margin-top: 30px;
 }
 
 .language-card {
@@ -56,60 +40,107 @@
   align-items: center;
   padding: 20px;
   border: 2px solid #e5e5e5;
-  border-radius: 16px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   background: white;
+  text-align: left;
 }
 
 .language-card:hover {
-  border-color: #58cc02;
-  background: #f8fff5;
+  border-color: #58CC02;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(88, 204, 2, 0.15);
+  box-shadow: 0 4px 15px rgba(88, 204, 2, 0.2);
 }
 
 .language-flag {
   font-size: 32px;
-  margin-right: 16px;
-  min-width: 40px;
+  margin-right: 15px;
+  flex-shrink: 0;
 }
 
 .language-info {
   flex: 1;
-  text-align: left;
 }
 
-.language-name {
-  font-size: 18px;
-  font-weight: 700;
+.language-info h3 {
   color: #3c3c3c;
-  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 5px;
 }
 
-.language-native {
+.language-info p {
+  color: #777;
   font-size: 14px;
-  color: #afafaf;
   margin: 0;
 }
 
-.language-arrow {
+/* Screen Layout */
+.screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: white;
+}
+
+.screen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid #e5e5e5;
+  background: white;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #afafaf;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-button:hover {
+  color: #3c3c3c;
+}
+
+.screen-header h1 {
   font-size: 20px;
-  color: #afafaf;
-  transition: color 0.2s ease;
-}
-
-.language-card:hover .language-arrow {
-  color: #58cc02;
-}
-
-.selection-footer {
-  margin-top: auto;
-  padding-top: 20px;
-}
-
-.selection-footer p {
-  font-size: 14px;
-  color: #afafaf;
+  font-weight: 600;
+  color: #3c3c3c;
   margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .language-selection {
+    padding: 30px 20px;
+  }
+  
+  .luna-mascot {
+    font-size: 48px;
+  }
+  
+  .selection-header h2 {
+    font-size: 20px;
+  }
+  
+  .language-card {
+    padding: 15px;
+  }
+  
+  .language-flag {
+    font-size: 28px;
+    margin-right: 12px;
+  }
+  
+  .language-info h3 {
+    font-size: 16px;
+  }
 } 

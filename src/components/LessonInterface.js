@@ -202,7 +202,7 @@ const LessonInterface = () => {
     return (
       <div className="lesson-interface">
         <div className="out-of-hearts">
-          <div className="sad-owl">😢</div>
+          <div className="sad-luna">🦊💔</div>
           <h2>You're out of hearts!</h2>
           <p>Take a break and come back later, or practice old lessons to earn hearts back.</p>
           <button className="back-to-map-btn" onClick={() => navigate('/lessons')}>

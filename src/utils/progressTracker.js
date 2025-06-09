@@ -1,7 +1,12 @@
+/**
+ * Lulearn - Progress Tracking System
+ * Manages user progress, achievements, and cloud synchronization
+ */
+
 // Progress Tracker - Persistent learning progress with content update compatibility
 class ProgressTracker {
   constructor() {
-    this.storageKey = 'duolingo_progress';
+    this.storageKey = 'lulearn_progress';
     this.version = '1.0';
     this.initializeProgress();
   }

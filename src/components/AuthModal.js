@@ -129,12 +129,12 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
       <div className="auth-modal" onClick={(e) => e.stopPropagation()}>
         <div className="auth-modal-header">
           <button className="close-btn" onClick={handleClose}>&times;</button>
-          <div className="auth-logo">🦉</div>
-          <h2>{isLogin ? 'Welcome back!' : 'Join DuolingoDupe'}</h2>
+          <div className="auth-logo">🦊</div>
+          <h2>{isLogin ? 'Welcome back!' : 'Join Lulearn'}</h2>
           <p className="auth-subtitle">
             {isLogin 
-              ? 'Sign in to continue your learning journey' 
-              : 'Start your language learning adventure'
+              ? 'Sign in to continue your learning journey with Luna' 
+              : 'Start your language learning adventure with Luna the Fox'
             }
           </p>
         </div>

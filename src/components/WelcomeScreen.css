@@ -1,140 +1,81 @@
 .welcome-screen {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #58cc02 0%, #3ca500 100%);
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  min-height: 100vh;
   padding: 20px;
-  color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .welcome-content {
-  max-width: 350px;
-  width: 100%;
   text-align: center;
+  max-width: 400px;
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
-.logo-section {
-  margin-bottom: 40px;
+.lulearn-logo {
+  margin-bottom: 30px;
 }
 
-.duolingo-logo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.owl-character {
+.luna-character {
   font-size: 80px;
-  margin-bottom: 10px;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  margin-bottom: 20px;
+  animation: gentle-bounce 2s ease-in-out infinite;
+}
+
+@keyframes gentle-bounce {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
 }
 
 .app-title {
   font-size: 32px;
   font-weight: 800;
-  margin: 0;
-  color: white;
-  letter-spacing: -1px;
+  color: #58CC02;
+  margin-bottom: 10px;
 }
 
-.tagline {
+.app-subtitle {
   font-size: 16px;
-  font-weight: 400;
-  margin: 0;
-  opacity: 0.9;
-}
-
-.illustration {
-  margin: 40px 0;
-  padding: 20px;
-}
-
-.characters {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  align-items: center;
-}
-
-.character {
-  font-size: 60px;
-  animation: float 3s ease-in-out infinite;
-}
-
-.character-1 {
-  animation-delay: 0s;
-}
-
-.character-2 {
-  animation-delay: 0.5s;
-}
-
-.character-3 {
-  animation-delay: 1s;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.welcome-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin-top: 40px;
+  color: #777;
+  margin-bottom: 30px;
 }
 
 .get-started-btn {
-  background: white;
-  color: #58cc02;
-  padding: 16px 24px;
+  background: linear-gradient(135deg, #58CC02 0%, #89E219 100%);
+  color: white;
+  border: none;
+  padding: 15px 30px;
   border-radius: 12px;
-  font-size: 16px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border: 2px solid white;
+  font-size: 18px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(88, 204, 2, 0.3);
+  width: 100%;
 }
 
 .get-started-btn:hover {
-  background: #f0f0f0;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 20px rgba(88, 204, 2, 0.4);
 }
 
-.get-started-btn:active {
-  transform: translateY(0);
-}
-
-.have-account-btn {
-  background: transparent;
-  color: white;
-  padding: 16px 24px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border: 2px solid white;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.have-account-btn:hover {
-  background: rgba(255,255,255,0.1);
-  transform: translateY(-2px);
-}
-
-.have-account-btn:active {
-  transform: translateY(0);
+/* Responsive Design */
+@media (max-width: 768px) {
+  .app-title {
+    font-size: 28px;
+  }
+  
+  .luna-character {
+    font-size: 60px;
+  }
+  
+  .welcome-content {
+    padding: 30px 20px;
+    margin: 20px;
+  }
 } 

@@ -13,24 +13,23 @@ const LanguageSelection = () => {
     navigate('/lessons');
   };
 
-  const handleBack = () => {
-    navigate('/');
-  };
-
   return (
-    <div className="language-selection">
+    <div className="screen">
       <div className="screen-header">
-        <button className="back-button" onClick={handleBack}>
+        <button className="back-button" onClick={() => navigate('/')}>
           ←
         </button>
-        <h2>Choose a language</h2>
+        <h1>Choose a Language</h1>
         <div></div>
       </div>
 
-      <div className="language-content">
-        <div className="owl-mascot">🦉</div>
-        <p className="selection-text">What would you like to learn?</p>
-        
+      <div className="language-selection">
+        <div className="selection-header">
+          <div className="luna-mascot">🦊</div>
+          <h2>What would you like to learn?</h2>
+          <p>Choose your learning journey with Luna!</p>
+        </div>
+
         <div className="languages-grid">
           {languages.map((language) => (
             <div
@@ -40,16 +39,11 @@ const LanguageSelection = () => {
             >
               <div className="language-flag">{language.flag}</div>
               <div className="language-info">
-                <h3 className="language-name">{language.name}</h3>
-                <p className="language-native">{language.nativeName}</p>
+                <h3>{language.name}</h3>
+                <p>{language.nativeName}</p>
               </div>
-              <div className="language-arrow">→</div>
             </div>
           ))}
-        </div>
-
-        <div className="selection-footer">
-          <p>For English speakers</p>
         </div>
       </div>
     </div>

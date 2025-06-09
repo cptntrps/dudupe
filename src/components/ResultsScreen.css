@@ -25,8 +25,8 @@
   margin-bottom: 40px;
 }
 
-.owl-celebration {
-  font-size: 80px;
+.luna-celebration {
+  font-size: 48px;
   margin-bottom: 20px;
   animation: bounce 2s infinite;
 }
@@ -221,7 +221,7 @@
     margin: 10px;
   }
   
-  .owl-celebration {
+  .luna-celebration {
     font-size: 60px;
   }
   
@@ -238,5 +238,11 @@
   .stat-item {
     flex-direction: row;
     gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .luna-celebration {
+    font-size: 36px;
   }
 } 

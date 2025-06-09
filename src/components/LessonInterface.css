@@ -233,9 +233,10 @@
   padding: 40px 20px;
 }
 
-.sad-owl {
-  font-size: 80px;
+.sad-luna {
+  font-size: 64px;
   margin-bottom: 20px;
+  animation: bounce 1s infinite;
 }
 
 .out-of-hearts h2 {

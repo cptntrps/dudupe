@@ -1,17 +1,16 @@
 {
-  "name": "duolingo-clone",
+  "name": "lulearn",
   "version": "1.0.0",
   "private": true,
   "homepage": "https://cptntrps.github.io/dudupe",
   "dependencies": {
-    "firebase": "^11.9.0",
+    "@firebase/app": "^0.10.17",
+    "firebase": "^11.1.0",
     "howler": "^2.2.3",
     "react": "^18.2.0",
-    "react-confetti": "^6.1.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.8.0",
-    "react-scripts": "5.0.1",
-    "styled-components": "^5.3.6"
+    "react-router-dom": "^6.8.1",
+    "react-scripts": "5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -40,6 +39,6 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^6.3.0"
+    "gh-pages": "^5.0.0"
   }
 }

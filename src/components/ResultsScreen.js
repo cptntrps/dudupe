@@ -85,7 +85,7 @@ const ResultsScreen = () => {
 
       <div className="results-content">
         <div className="celebration-section">
-          <div className="owl-celebration">🦉</div>
+          <div className="luna-celebration">🦊🎉</div>
           <div className="performance-icon">{performance.icon}</div>
           <h1 className="results-title">Lesson Complete!</h1>
           <p className="performance-message">{performance.message}</p>

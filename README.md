@@ -1,6 +1,59 @@
-# 🦋 Duolingo Clone - Language Learning App
+# Lulearn - Interactive Language Learning
 
-A modern language learning application inspired by Duolingo, built with React. Learn English with interactive exercises including multiple choice, fill-in-the-blank, typing, drag & drop, and word ordering.
+🦊 Learn languages with Luna the Fox! 
+
+An interactive language learning application that makes learning fun and engaging. Built with React, featuring gamified lessons, progress tracking, and social features.
+
+## Features
+
+- 🎯 Interactive lessons with multiple exercise types
+- 🏆 Achievement system and XP tracking
+- 📊 Progress visualization and statistics
+- 🔥 Streak tracking to maintain motivation
+- 🎨 Modern, responsive UI with Luna the Fox mascot
+- 💾 Cloud synchronization for cross-device learning
+- 📱 Mobile-friendly design
+
+## Exercise Types
+
+- Multiple choice questions
+- Translation exercises
+- Fill-in-the-blank
+- Image matching
+- Typing practice
+- Drag and drop
+- Word ordering
+
+## Getting Started
+
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Start the development server: `npm start`
+4. Open [http://localhost:3000](http://localhost:3000) to view in your browser
+
+## Deployment
+
+The app is configured for GitHub Pages deployment:
+
+```bash
+npm run deploy
+```
+
+## Technology Stack
+
+- React 18
+- React Router for navigation
+- Firebase for authentication and data storage
+- CSS3 with modern animations
+- Progressive Web App (PWA) support
+
+## Contributing
+
+Feel free to contribute to Lulearn! Submit issues, feature requests, or pull requests to help make language learning more accessible and fun.
+
+## License
+
+This project is open source and available under the MIT License.
 
 ## 🚀 Features
 

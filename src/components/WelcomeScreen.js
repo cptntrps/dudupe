@@ -12,31 +12,14 @@ const WelcomeScreen = () => {
   return (
     <div className="welcome-screen">
       <div className="welcome-content">
-        <div className="logo-section">
-          <div className="duolingo-logo">
-            <div className="owl-character">🦉</div>
-            <h1 className="app-title">EnglishOwl</h1>
-          </div>
-          <p className="tagline">Aprenda inglês grátis, para sempre</p>
-          <p className="subtitle">Learn English free, forever</p>
+        <div className="lulearn-logo">
+          <div className="luna-character">🦊</div>
+          <h1 className="app-title">Lulearn</h1>
+          <p className="app-subtitle">Learn languages with Luna!</p>
         </div>
-
-        <div className="illustration">
-          <div className="characters">
-            <div className="character character-1">🐸</div>
-            <div className="character character-2">👨‍💻</div>
-            <div className="character character-3">👩‍🎨</div>
-          </div>
-        </div>
-
-        <div className="welcome-actions">
-          <button className="get-started-btn" onClick={handleGetStarted}>
-            GET STARTED
-          </button>
-          <button className="have-account-btn" onClick={handleGetStarted}>
-            I ALREADY HAVE AN ACCOUNT
-          </button>
-        </div>
+        <button className="get-started-btn" onClick={handleGetStarted}>
+          Get Started
+        </button>
       </div>
     </div>
   );
