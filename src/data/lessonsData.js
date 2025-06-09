@@ -6129,8 +6129,9 @@ export const lessons = {
 export const getLessonsForLanguage = (languageId) => {
   const originalLessons = lessons[languageId] || [];
   
-  // Keep simple exercise types that work well: multiple-choice, translation, fill-blank
-  const allowedTypes = ['multiple-choice', 'translation', 'fill-blank'];
+  // Expand to include more exercise types for more questions per lesson (6-7 instead of 3)
+  const allowedTypes = ['multiple-choice', 'translation', 'fill-blank', 'typing', 'image-match'];
+  // Exclude problematic types: 'word-order', 'drag-drop' due to issues
   
   const filteredLessons = originalLessons.map(lesson => ({
     ...lesson,
