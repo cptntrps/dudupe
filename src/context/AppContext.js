@@ -171,6 +171,7 @@ export const AppProvider = ({ children }) => {
     console.log('Lesson ID:', lessonId);
     console.log('Accuracy:', accuracy);
     console.log('Time spent:', timeSpent);
+    console.log('Current userData before:', userData);
 
     // Calculate XP based on lesson difficulty and accuracy
     const baseXP = currentLesson?.xp || 15;
@@ -201,7 +202,8 @@ export const AppProvider = ({ children }) => {
       setAchievements(newAchievements);
     }
 
-    // Update user stats
+    // Update user stats from progress tracker
+    console.log('Updating user stats from progress tracker...');
     updateUserStats();
     
     // Reset hearts on lesson completion
@@ -213,10 +215,15 @@ export const AppProvider = ({ children }) => {
       await syncProgressToCloud();
       
       // Refresh user data from Firestore to update UI
+      console.log('Refreshing user data from Firestore...');
       const userDataResult = await authService.getUserData(user.uid);
       if (userDataResult.success) {
+        console.log('Previous userData:', userData);
+        console.log('New userData from Firestore:', userDataResult.data);
         setUserData(userDataResult.data);
-        console.log('User data refreshed from Firestore:', userDataResult.data);
+        console.log('User data state updated');
+      } else {
+        console.error('Failed to refresh user data:', userDataResult.error);
       }
     }
 

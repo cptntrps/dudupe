@@ -12,7 +12,7 @@ import AchievementNotification from './components/AchievementNotification';
 import './App.css';
 
 function AppContent() {
-  const { user, loading, handleAuthSuccess, handleLogout } = useApp();
+  const { user, userData, loading, handleAuthSuccess, handleLogout } = useApp();
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   if (loading) {

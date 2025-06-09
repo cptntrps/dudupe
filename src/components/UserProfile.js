@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import authService from '../services/authService';
+import { useApp } from '../context/AppContext';
 import './UserProfile.css';
 
-const UserProfile = ({ user, userData, onLogout }) => {
+const UserProfile = ({ user, onLogout }) => {
+  const { userData, userStats } = useApp();
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -26,6 +28,19 @@ const UserProfile = ({ user, userData, onLogout }) => {
     if (!name) return '?';
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
+
+  // Use userStats for real-time data, fallback to userData for cloud-synced data
+  const displayStats = {
+    totalXP: userStats?.totalXP || userData?.totalXP || 0,
+    currentStreak: userStats?.currentStreak || userData?.currentStreak || 0,
+    lessonsCompleted: userStats?.lessonsCompleted || userData?.lessonsCompleted || 0,
+    averageAccuracy: userStats?.averageAccuracy || userData?.averageAccuracy || 0,
+    level: userStats?.level || userData?.level || 1
+  };
+
+  console.log('UserProfile render - displayStats:', displayStats);
+  console.log('userStats:', userStats);
+  console.log('userData:', userData);
 
   return (
     <div className="user-profile">
@@ -63,21 +78,21 @@ const UserProfile = ({ user, userData, onLogout }) => {
               <div className="stat">
                 <span className="stat-icon">🏆</span>
                 <div>
-                  <div className="stat-value">{userData?.totalXP || 0}</div>
+                  <div className="stat-value">{displayStats.totalXP}</div>
                   <div className="stat-label">Total XP</div>
                 </div>
               </div>
               <div className="stat">
                 <span className="stat-icon">🔥</span>
                 <div>
-                  <div className="stat-value">{userData?.currentStreak || 0}</div>
+                  <div className="stat-value">{displayStats.currentStreak}</div>
                   <div className="stat-label">Day Streak</div>
                 </div>
               </div>
               <div className="stat">
                 <span className="stat-icon">📚</span>
                 <div>
-                  <div className="stat-value">{userData?.lessonsCompleted || 0}</div>
+                  <div className="stat-value">{displayStats.lessonsCompleted}</div>
                   <div className="stat-label">Lessons</div>
                 </div>
               </div>
@@ -90,7 +105,11 @@ const UserProfile = ({ user, userData, onLogout }) => {
               </div>
               <div className="info-item">
                 <span>Average accuracy</span>
-                <span>{userData?.averageAccuracy || 0}%</span>
+                <span>{displayStats.averageAccuracy}%</span>
+              </div>
+              <div className="info-item">
+                <span>Level</span>
+                <span>{displayStats.level}</span>
               </div>
             </div>
 
