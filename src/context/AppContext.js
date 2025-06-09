@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { devLog, devWarn } from '../utils/logger';
 import progressTracker from '../utils/progressTracker';
 import authService from '../services/authService';
 
@@ -14,6 +15,7 @@ export const useApp = () => {
 
 export const AppProvider = ({ children }) => {
   const [selectedLanguage, setSelectedLanguage] = useState(null);
+  const [hearts, setHearts] = useState(5);
   const [currentLesson, setCurrentLesson] = useState(null);
   
   // Authentication state
@@ -30,10 +32,10 @@ export const AppProvider = ({ children }) => {
   // Listen for authentication state changes
   useEffect(() => {
     const unsubscribe = authService.onAuthStateChange(async (user) => {
-      console.log('=== AUTH STATE CHANGE ===');
-      console.log('User:', user ? 'Logged in' : 'Logged out');
-      console.log('User ID:', user?.uid);
-      console.log('========================');
+      devLog('=== AUTH STATE CHANGE ===');
+      devLog('User:', user ? 'Logged in' : 'Logged out');
+      devLog('User ID:', user?.uid);
+      devLog('========================');
       
       setLoading(true);
       
@@ -45,11 +47,11 @@ export const AppProvider = ({ children }) => {
         
         // Load user data from Firestore
         const userDataResult = await authService.getUserData(user.uid);
-        console.log('Firestore user data result:', userDataResult);
+        devLog('Firestore user data result:', userDataResult);
         
         if (userDataResult.success) {
           setUserData(userDataResult.data);
-          console.log('User data loaded:', userDataResult.data);
+          devLog('User data loaded:', userDataResult.data);
           
           // Set language preference from user data
           if (userDataResult.data.preferences?.selectedLanguage) {
@@ -58,7 +60,7 @@ export const AppProvider = ({ children }) => {
           
           // Sync cloud progress with local progress tracker
           if (userDataResult.data.progress) {
-            console.log('Syncing cloud progress with local tracker...');
+            devLog('Syncing cloud progress with local tracker...');
             progressTracker.syncWithCloudData(userDataResult.data.progress);
             updateUserStats();
           }
@@ -79,31 +81,13 @@ export const AppProvider = ({ children }) => {
     });
 
     return () => unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // No dependencies to avoid infinite loops - updateUserStats is stable
-
-  // Update user stats from progress tracker - MOVED BEFORE useEffect calls
-  const updateUserStats = useCallback(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('=== UPDATE USER STATS DEBUG ===');
-    }
-    const newStats = progressTracker.getUserStats();
-    if (process.env.NODE_ENV === 'development') {
-      console.log('progressTracker.getUserStats() returned:', newStats);
-    }
-    setUserStats(newStats);
-    if (process.env.NODE_ENV === 'development') {
-      console.log('userStats state updated to:', newStats);
-      console.log('=== END UPDATE USER STATS DEBUG ===');
-    }
-  }, []); // No dependencies needed as progressTracker is stable
+  }, []);
 
   // Load saved data from localStorage (legacy support)
   useEffect(() => {
     if (!authChecked) return; // Wait for auth check to complete
     
     const savedData = localStorage.getItem('lulearn-data');
-    
     if (savedData) {
       try {
         const data = JSON.parse(savedData);
@@ -113,38 +97,45 @@ export const AppProvider = ({ children }) => {
           setSelectedLanguage(data.selectedLanguage || null);
         }
         
+        setHearts(data.hearts || 5);
+        
         // Migrate old progress to new system if exists
         if (data.xp || data.completedLessons?.length > 0) {
-          if (process.env.NODE_ENV === 'development') {
-            console.log('Migrating legacy progress data...');
-          }
+          devLog('Migrating legacy progress data...');
           // You could implement migration logic here if needed
         }
       } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('Failed to load legacy data:', error);
-        }
+        devWarn('Failed to load legacy data:', error);
       }
     }
     
     // Update user stats from progress tracker
     updateUserStats();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authChecked, userData?.preferences?.selectedLanguage]); // updateUserStats is stable, no need to include
+  }, [authChecked, userData]);
+
+  // Update user stats from progress tracker
+  const updateUserStats = () => {
+    devLog('=== UPDATE USER STATS DEBUG ===');
+    const newStats = progressTracker.getUserStats();
+    devLog('progressTracker.getUserStats() returned:', newStats);
+    setUserStats(newStats);
+    devLog('userStats state updated to:', newStats);
+    devLog('=== END UPDATE USER STATS DEBUG ===');
+  };
 
   // Sync progress to cloud if user is authenticated
-  const syncProgressToCloud = useCallback(async () => {
+  const syncProgressToCloud = async () => {
     if (!user) return;
     
-    console.log('=== SYNC TO CLOUD DEBUG ===');
+    devLog('=== SYNC TO CLOUD DEBUG ===');
     
     const localProgress = progressTracker.exportProgress();
     const stats = progressTracker.getUserStats();
     
-    console.log('Raw progressTracker.getUserStats():', stats);
-    console.log('Raw progressTracker.exportProgress():', localProgress);
+    devLog('Raw progressTracker.getUserStats():', stats);
+    devLog('Raw progressTracker.exportProgress():', localProgress);
     
-    console.log('Syncing progress to cloud:', {
+    devLog('Syncing progress to cloud:', {
       totalXP: stats.totalXP,
       currentStreak: stats.currentStreak,
       lessonsCompleted: stats.lessonsCompleted,
@@ -166,18 +157,27 @@ export const AppProvider = ({ children }) => {
       lastSyncAt: new Date().toISOString()
     };
     
-    console.log('Full update data being sent to Firestore:', updateData);
+    devLog('Full update data being sent to Firestore:', updateData);
     
     try {
       const result = await authService.updateUserData(user.uid, updateData);
-      console.log('Firestore update result:', result);
-      console.log('Progress synced to cloud successfully');
+      devLog('Firestore update result:', result);
+      devLog('Progress synced to cloud successfully');
     } catch (error) {
       console.error('Error syncing to cloud:', error);
     }
     
-    console.log('=== END SYNC TO CLOUD DEBUG ===');
-  }, [user]); // Only depend on user
+    devLog('=== END SYNC TO CLOUD DEBUG ===');
+  };
+
+  // Heart management
+  const loseHeart = () => {
+    setHearts(prev => Math.max(0, prev - 1));
+  };
+
+  const resetHearts = () => {
+    setHearts(5);
+  };
 
   // XP and progress functions using new tracker
   const gainXP = (amount) => {
@@ -188,22 +188,22 @@ export const AppProvider = ({ children }) => {
   // Complete lesson with comprehensive tracking
   const completeLesson = async (lessonId, accuracy = 100, timeSpent = 0) => {
     if (!selectedLanguage) {
-      console.warn('No language selected for lesson completion');
+      devWarn('No language selected for lesson completion');
       return;
     }
 
-    console.log('=== COMPLETING LESSON ===');
-    console.log('Lesson ID:', lessonId);
-    console.log('Accuracy:', accuracy);
-    console.log('Time spent:', timeSpent);
-    console.log('Current userData before:', userData);
+    devLog('=== COMPLETING LESSON ===');
+    devLog('Lesson ID:', lessonId);
+    devLog('Accuracy:', accuracy);
+    devLog('Time spent:', timeSpent);
+    devLog('Current userData before:', userData);
 
     // Calculate XP based on lesson difficulty and accuracy
     const baseXP = currentLesson?.xp || 15;
     const accuracyBonus = Math.floor((accuracy / 100) * baseXP * 0.5);
     const totalXP = baseXP + accuracyBonus;
 
-    console.log('XP calculation:', { baseXP, accuracyBonus, totalXP });
+    devLog('XP calculation:', { baseXP, accuracyBonus, totalXP });
 
     // Record completion in progress tracker
     const completionData = progressTracker.completeLesson(
@@ -214,7 +214,7 @@ export const AppProvider = ({ children }) => {
       timeSpent
     );
 
-    console.log('Progress tracker updated:', completionData);
+    devLog('Progress tracker updated:', completionData);
 
     // Check for new achievements
     const newAchievements = progressTracker.checkAchievements(
@@ -228,28 +228,31 @@ export const AppProvider = ({ children }) => {
     }
 
     // Update user stats from progress tracker
-    console.log('Updating user stats from progress tracker...');
+    devLog('Updating user stats from progress tracker...');
     updateUserStats();
+    
+    // Reset hearts on lesson completion
+    resetHearts();
 
     // Sync to cloud if user is authenticated
     if (user) {
-      console.log('Syncing progress to Firestore...');
+      devLog('Syncing progress to Firestore...');
       await syncProgressToCloud();
       
       // Refresh user data from Firestore to update UI
-      console.log('Refreshing user data from Firestore...');
+      devLog('Refreshing user data from Firestore...');
       const userDataResult = await authService.getUserData(user.uid);
       if (userDataResult.success) {
-        console.log('Previous userData:', userData);
-        console.log('New userData from Firestore:', userDataResult.data);
+        devLog('Previous userData:', userData);
+        devLog('New userData from Firestore:', userDataResult.data);
         setUserData(userDataResult.data);
-        console.log('User data state updated');
+        devLog('User data state updated');
       } else {
         console.error('Failed to refresh user data:', userDataResult.error);
       }
     }
 
-    console.log('=== LESSON COMPLETION DONE ===');
+    devLog('=== LESSON COMPLETION DONE ===');
     return completionData;
   };
 
@@ -385,6 +388,12 @@ export const AppProvider = ({ children }) => {
     setSelectedLanguage: updateSelectedLanguage,
     currentLesson,
     setCurrentLesson,
+    
+    // Hearts system
+    hearts,
+    setHearts,
+    loseHeart,
+    resetHearts,
     
     // Progress and stats
     userStats,

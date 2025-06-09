@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { devLog } from '../utils/logger';
 import { getLessonsForLanguage } from '../data/lessonsData';
 import './LessonInterface.css';
 
@@ -10,8 +9,6 @@ const LessonInterface = () => {
   const navigate = useNavigate();
   const { 
     selectedLanguage, 
-    hearts, 
-    loseHeart, 
     completeLesson, 
     setCurrentLesson
   } = useApp();
@@ -48,23 +45,23 @@ const LessonInterface = () => {
     if (currentExerciseIndex >= 0 && currentLesson?.exercises) {
       const exercise = currentLesson.exercises[currentExerciseIndex];
       
-      devLog('=== NEW EXERCISE LOADED ===');
-      devLog('Exercise Index:', currentExerciseIndex);
-      devLog('Exercise Type:', exercise?.type);
-      devLog('Question:', exercise?.question);
-      devLog('===========================');
+      // console.log('=== NEW EXERCISE LOADED ===');
+      // console.log('Exercise Index:', currentExerciseIndex);
+      // console.log('Exercise Type:', exercise?.type);
+      // console.log('Question:', exercise?.question);
+      // console.log('===========================');
       
       if (exercise?.type === 'drag-drop' && exercise.words) {
         setAvailableWords([...exercise.words]);
-        devLog('Initialized words for drag-drop:', exercise.words);
+        // console.log('Initialized words for drag-drop:', exercise.words);
       }
       
       if (exercise?.type === 'word-order' && exercise.words) {
-        devLog('Initialized words for word-order:', exercise.words);
+        // console.log('Initialized words for word-order:', exercise.words);
       }
       
       // Reset states for new exercise - only when exercise index changes
-      devLog('Resetting state for new exercise');
+      // console.log('Resetting state for new exercise');
       setSelectedAnswer(null);
       setTypedAnswer('');
       setDraggedWords([]);
@@ -72,66 +69,60 @@ const LessonInterface = () => {
       setShowFeedback(false);
       setIsProcessing(false);
       
-      devLog('State reset complete');
+      // console.log('State reset complete');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentExerciseIndex]); // Only depend on exercise index and exercises array length
+  }, [currentExerciseIndex]); // Depend on exercise index and exercises array
 
   const handleAnswerSelect = (answer) => {
-    devLog('=== ANSWER SELECTION ATTEMPT ===');
-    devLog('Attempting to select answer:', answer);
-    devLog('showFeedback:', showFeedback);
-    devLog('isProcessing:', isProcessing);
-    devLog('Current selectedAnswer:', selectedAnswer);
+    // console.log('=== ANSWER SELECTION ATTEMPT ===');
+    // console.log('Attempting to select answer:', answer);
+    // console.log('showFeedback:', showFeedback);
+    // console.log('isProcessing:', isProcessing);
+    // console.log('Current selectedAnswer:', selectedAnswer);
     
     if (showFeedback || isProcessing) {
-      devLog('Selection blocked - feedback showing or processing');
+      // console.log('Selection blocked - feedback showing or processing');
       return;
     }
     
-    devLog('Setting selected answer to:', answer);
+    // console.log('Setting selected answer to:', answer);
     setSelectedAnswer(answer);
-    devLog('=== ANSWER SELECTION COMPLETE ===');
+    // console.log('=== ANSWER SELECTION COMPLETE ===');
   };
 
-  const handleCheckAnswer = () => {
-    devLog('handleCheckAnswer called');
+  const handleCheckAnswer = async () => {
+    // console.log('=== HANDLE CHECK ANSWER START ===');
+    // console.log('Current exercise type:', currentExercise.type);
+    // console.log('Selected answer:', selectedAnswer);
+    // console.log('Typed answer:', typedAnswer);
     
-    if (isProcessing || showFeedback) {
-      devLog('Already processing or showing feedback, returning early');
+    if (isProcessing) {
+      // console.log('Already processing, skipping...');
       return;
     }
     
-    if (!isAnswerReady()) {
-      devLog('No answer ready, returning early');
+    if (!selectedAnswer && !typedAnswer && draggedWords.length === 0 && wordOrderAnswer.length === 0) {
+      // console.log('No answer provided');
       return;
     }
-
+    
+    // console.log('Setting isProcessing to true');
     setIsProcessing(true);
-    devLog('Starting answer check...');
     
     setTimeout(() => {
-      let correct = false;
+      // console.log('Processing answer after timeout...');
       
-      devLog('=== EXERCISE DETAILS ===');
-      devLog('Exercise ID:', currentExercise.id);
-      devLog('Exercise Type:', currentExercise.type);
-      devLog('Question:', currentExercise.question);
-      devLog('Correct Answer:', currentExercise.correctAnswer);
-      devLog('Available Options:', currentExercise.options);
-      devLog('Current Exercise Index:', currentExerciseIndex);
-      devLog('Total Exercises:', currentLesson.exercises.length);
-      devLog('========================');
+      let correct = false;
       
       if (currentExercise.type === 'image-match') {
         correct = selectedAnswer === currentExercise.correctAnswer;
-        devLog('Image match - Selected:', selectedAnswer, 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
+        // console.log('Image match - Selected:', selectedAnswer, 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
       } else if (currentExercise.type === 'typing') {
         correct = typedAnswer.toLowerCase().trim() === currentExercise.correctAnswer.toLowerCase().trim();
-        devLog('Typing - Typed:', typedAnswer, 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
+        // console.log('Typing - Typed:', typedAnswer, 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
       } else if (currentExercise.type === 'drag-drop') {
         correct = draggedWords.join(' ') === currentExercise.correctAnswer;
-        devLog('Drag-drop - Dragged:', draggedWords.join(' '), 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
+        // console.log('Drag-drop - Dragged:', draggedWords.join(' '), 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
       } else if (currentExercise.type === 'word-order') {
         // Get the correct order by splitting the correct answer
         const correctOrder = currentExercise.correctAnswer.split(' ');
@@ -141,33 +132,33 @@ const LessonInterface = () => {
         correct = correctOrder.length === userOrder.length && 
                  correctOrder.every((word, index) => word === userOrder[index]);
         
-        devLog('=== WORD ORDER COMPARISON ===');
-        devLog('User selected order:', userOrder);
-        devLog('Correct word order:', correctOrder);
-        devLog('Arrays match:', correct);
-        devLog('Length match:', correctOrder.length === userOrder.length);
+        // console.log('=== WORD ORDER COMPARISON ===');
+        // console.log('User selected order:', userOrder);
+        // console.log('Correct word order:', correctOrder);
+        // console.log('Arrays match:', correct);
+        // console.log('Length match:', correctOrder.length === userOrder.length);
         if (correctOrder.length === userOrder.length) {
-          devLog('Word by word comparison:');
+          // console.log('Word by word comparison:');
           correctOrder.forEach((word, index) => {
             const userWord = userOrder[index];
             const matches = word === userWord;
-            devLog(`Position ${index}: "${userWord}" vs "${word}" = ${matches}`);
+            // console.log(`Position ${index}: "${userWord}" vs "${word}" = ${matches}`);
           });
         }
-        devLog('==============================');
+        // console.log('==============================');
       } else {
         correct = selectedAnswer === currentExercise.correctAnswer;
-        devLog('Multiple choice - Selected:', selectedAnswer, 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
+        // console.log('Multiple choice - Selected:', selectedAnswer, 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
       }
 
-      devLog('=== ANSWER VALIDATION ===');
-      devLog('User Answer:', selectedAnswer || typedAnswer || draggedWords.join(' ') || wordOrderAnswer.join(' '));
-      devLog('Expected Answer:', currentExercise.correctAnswer);
-      devLog('Is Correct:', correct);
-      devLog('========================');
+      // console.log('=== ANSWER VALIDATION ===');
+      // console.log('User Answer:', selectedAnswer || typedAnswer || draggedWords.join(' ') || wordOrderAnswer.join(' '));
+      // console.log('Expected Answer:', currentExercise.correctAnswer);
+      // console.log('Is Correct:', correct);
+      // console.log('========================');
 
-      devLog('Setting feedback - Correct:', correct);
-      devLog('About to set showFeedback to true and isProcessing to false');
+      // console.log('Setting feedback - Correct:', correct);
+      // console.log('About to set showFeedback to true and isProcessing to false');
       
       // Update states
       setIsCorrect(correct);
@@ -176,24 +167,18 @@ const LessonInterface = () => {
       // Force state update with a callback to ensure it happens
       setShowFeedback(true);
       
-      devLog('State should now be updated - showFeedback: true, isProcessing: false');
-
-      // Force re-render to ensure UI updates
+      // console.log('State should now be updated - showFeedback: true, isProcessing: false');
 
       // Handle exercise completion
       try {
-        devLog('Not calling endExercise to prevent re-renders');
+        // console.log('Not calling endExercise to prevent re-renders');
         // endExercise(currentExercise.type, correct);
 
         if (correct) {
-          devLog('Incrementing correct answers');
-          setCorrectAnswers(prev => {
-            devLog('Previous correct answers:', prev, '→ New:', prev + 1);
-            return prev + 1;
-          });
+          // console.log('✅ Correct answer!');
+          setCorrectAnswers(prev => prev + 1);
         } else {
-          devLog('Losing heart');
-          loseHeart();
+          // console.log('❌ Wrong answer detected!');
         }
       } catch (error) {
         console.error('Error in handleCheckAnswer:', error);
@@ -201,80 +186,62 @@ const LessonInterface = () => {
     }, 100); // Reduced delay to see if timing is the issue
   };
 
-  const handleContinue = async () => {
-    devLog('=== CONTINUE BUTTON CLICKED ===');
-    devLog('Current exercise index:', currentExerciseIndex);
-    devLog('Total exercises:', currentLesson.exercises.length);
-    devLog('Current question was:', currentExercise.question);
-    devLog('Correct answers so far:', correctAnswers);
-    devLog('==============================');
+  const handleContinue = () => {
+    // console.log('handleContinue called');
+    // console.log('showFeedback:', showFeedback);
+    // console.log('currentExerciseIndex:', currentExerciseIndex);
+    // console.log('totalExercises:', currentLesson.length);
     
-    // Reset states for next exercise
+    if (!showFeedback) {
+      // console.log('No feedback showing, cannot continue yet');
+      return;
+    }
+    
+    // Reset states for next question
     setShowFeedback(false);
-    setIsProcessing(false);
     setSelectedAnswer(null);
     setTypedAnswer('');
     setDraggedWords([]);
+    setAvailableWords([]);
     setWordOrderAnswer([]);
     
-    if (currentExerciseIndex < currentLesson.exercises.length - 1) {
-      devLog('Moving to next exercise');
-      devLog('Next exercise will be:', currentLesson.exercises[currentExerciseIndex + 1].question);
-      setCurrentExerciseIndex(prev => prev + 1);
-      
-      // Reset available words for drag-drop exercises
-      if (currentLesson.exercises[currentExerciseIndex + 1]?.type === 'drag-drop') {
-        setAvailableWords([...currentLesson.exercises[currentExerciseIndex + 1].words]);
+    // console.log('States reset for next question');
+    
+        const shuffled = [...words].sort(() => Math.random() - 0.5);
+        setAvailableWords(shuffled);
       }
     } else {
-      devLog('=== LESSON COMPLETE ===');
-      devLog('Final stats calculation...');
-      
-      const accuracy = Math.round((correctAnswers / currentLesson.exercises.length) * 100);
+      // console.log('Lesson completed, navigating to results');
       const timeSpent = lessonStartTime ? (Date.now() - lessonStartTime) / 1000 / 60 : 0;
+      const accuracy = Math.round((correctAnswers / currentLesson.exercises.length) * 100);
+      const xpEarned = currentLesson.xp || 15;
       
-      devLog('Lesson completion data:');
-      devLog('- Correct answers:', correctAnswers);
-      devLog('- Total questions:', currentLesson.exercises.length);
-      devLog('- Accuracy:', accuracy + '%');
-      devLog('- Time spent:', timeSpent.toFixed(2), 'minutes');
-      devLog('======================');
+      // console.log('Lesson completion stats:', {
+        correctAnswers,
+        totalQuestions: currentLesson.exercises.length,
+        accuracy,
+        timeSpent,
+        xpEarned
+      });
       
-      try {
-        devLog('Calling completeLesson');
-        const completionData = await completeLesson(currentLesson.id, accuracy, timeSpent);
-        
-        devLog('Lesson completion result:', completionData);
-        
-        // Ensure completionData is serializable and not a Promise
-        const safeCompletionData = completionData && typeof completionData === 'object' ? 
-          JSON.parse(JSON.stringify(completionData)) : completionData;
-        
-        navigate('/results', { 
-          state: { 
-            correctAnswers, 
-            totalQuestions: currentLesson.exercises.length,
-            xpEarned: safeCompletionData?.xpEarned || currentLesson.xp,
-            accuracy: accuracy,
-            timeSpent: Math.round(timeSpent * 10) / 10,
-            completionData: safeCompletionData
-          } 
-        });
-      } catch (error) {
-        console.error('Error completing lesson:', error);
-        // Fallback navigation even if completion fails
-        navigate('/results', { 
-          state: { 
-            correctAnswers, 
-            totalQuestions: currentLesson.exercises.length,
-            xpEarned: currentLesson.xp,
-            accuracy: accuracy,
-            timeSpent: Math.round(timeSpent * 10) / 10
-          } 
-        });
-      }
+      // Complete the lesson
+      completeLesson(currentLesson.id, accuracy, timeSpent);
+      
+      // Navigate to results
+      navigate('/results', {
+        state: {
+          correctAnswers,
+          totalQuestions: currentLesson.exercises.length,
+          accuracy,
+          timeSpent,
+          xpEarned,
+          completionData: null
+        }
+      });
     }
   };
+
+
 
   const handleExit = () => {
     const confirmExit = window.confirm('Are you sure you want to exit this lesson? Your progress will be lost. (Tem certeza de que deseja sair desta lição? Seu progresso será perdido.)');
@@ -300,16 +267,16 @@ const LessonInterface = () => {
   const handleWordOrderClick = (word) => {
     if (showFeedback || isProcessing) return;
     
-    devLog('Word clicked:', word);
-    devLog('Current word order answer:', wordOrderAnswer);
+    // console.log('Word clicked:', word);
+    // console.log('Current word order answer:', wordOrderAnswer);
     
     if (wordOrderAnswer.includes(word)) {
       // Remove word from answer and make it available again
-      devLog('Removing word from answer:', word);
+      // console.log('Removing word from answer:', word);
       setWordOrderAnswer(prev => prev.filter(w => w !== word));
     } else {
       // Add word to answer
-      devLog('Adding word to answer:', word);
+      // console.log('Adding word to answer:', word);
       setWordOrderAnswer(prev => [...prev, word]);
     }
   };
@@ -318,7 +285,7 @@ const LessonInterface = () => {
   const handleOrderedWordClick = (word, index) => {
     if (showFeedback || isProcessing) return;
     
-    devLog('Removing ordered word at index:', index, 'word:', word);
+    // console.log('Removing ordered word at index:', index, 'word:', word);
     setWordOrderAnswer(prev => prev.filter((_, i) => i !== index));
   };
 
@@ -340,34 +307,12 @@ const LessonInterface = () => {
     );
   }
 
-  if (hearts === 0) {
-    return (
-      <div className="lesson-interface">
-        <div className="out-of-hearts">
-          <div className="sad-luna">🦊💔</div>
-          <h2>You're out of hearts!</h2>
-          <p>Take a break and come back later, or practice old lessons to earn hearts back.</p>
-          <button className="back-to-map-btn" onClick={() => navigate('/lessons')}>
-            Back to Lessons
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="lesson-interface">
       <div className="lesson-header">
         <button className="close-button" onClick={handleExit}>×</button>
         <div className="progress-bar">
           <div className="progress-fill" style={{ width: `${progress}%` }}></div>
-        </div>
-        <div className="hearts">
-          {[...Array(5)].map((_, index) => (
-            <span key={index} className={`heart ${index >= hearts ? 'empty' : ''}`}>
-              ❤️
-            </span>
-          ))}
         </div>
       </div>
 
@@ -481,11 +426,18 @@ const LessonInterface = () => {
 
           {showFeedback && (
             <div className={`feedback ${isCorrect ? 'correct' : 'incorrect'}`}>
-              <div className="feedback-icon">
-                {isCorrect ? '✅' : '❌'}
-              </div>
-              <div className="feedback-text">
-                {isCorrect ? 'Great job! (Muito bem!)' : `Correct answer: ${currentExercise.correctAnswer} (Resposta correta: ${currentExercise.correctAnswer})`}
+              <div className="feedback-content">
+                <div className="feedback-icon">
+                  {isCorrect ? '✅' : '❌'}
+                </div>
+                <div className="feedback-text">
+                  <h3>{isCorrect ? 'Correct!' : 'Oops! Not quite right.'}</h3>
+                  {!isCorrect && (
+                    <div className="correct-answer">
+                      <p>The correct answer is: <strong>{currentExercise.correctAnswer}</strong></p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -495,22 +447,21 @@ const LessonInterface = () => {
       {/* Fixed bottom footer with buttons */}
       <div className="lesson-footer-fixed">
         {!showFeedback ? (
-          <div>
-            <button
-              className={`check-button ${isAnswerReady() && !isProcessing ? 'active' : ''}`}
-              onClick={handleCheckAnswer}
-              disabled={!isAnswerReady() || isProcessing}
+          <button 
+            className="check-button" 
+            onClick={handleCheckAnswer}
+            disabled={isProcessing || !isAnswerReady()}
+          >
+            {isProcessing ? 'Checking...' : 'Check'}
+          </button>
+                  ) : (
+            <button 
+              className="continue-button"
+              onClick={handleContinue}
             >
-              {isProcessing ? 'CHECKING...' : 'CHECK'}
+              Continue
             </button>
-          </div>
-        ) : (
-          <div>
-            <button className="continue-button" onClick={handleContinue}>
-              {currentExerciseIndex < currentLesson.exercises.length - 1 ? 'CONTINUE' : 'FINISH LESSON'}
-            </button>
-          </div>
-        )}
+          )}
       </div>
     </div>
   );
