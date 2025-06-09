@@ -495,16 +495,8 @@ const LessonInterface = () => {
 
       {/* Fixed bottom footer with buttons */}
       <div className="lesson-footer-fixed">
-        {console.log('=== RENDER DEBUG ===')}
-        {console.log('showFeedback:', showFeedback)}
-        {console.log('isProcessing:', isProcessing)}
-        {console.log('isAnswerReady():', isAnswerReady())}
-        {console.log('forceUpdate:', forceUpdate)}
-        {console.log('=====================')}
-        
         {!showFeedback ? (
           <div>
-            {console.log('Rendering CHECK button')}
             <button
               className={`check-button ${isAnswerReady() && !isProcessing ? 'active' : ''}`}
               onClick={handleCheckAnswer}
@@ -515,7 +507,6 @@ const LessonInterface = () => {
           </div>
         ) : (
           <div>
-            {console.log('Rendering CONTINUE button - showFeedback is TRUE')}
             <button className="continue-button" onClick={handleContinue}>
               {currentExerciseIndex < currentLesson.exercises.length - 1 ? 'CONTINUE' : 'FINISH LESSON'}
             </button>
