@@ -391,7 +391,15 @@ class ProgressTracker {
     }
 
     try {
-      const currentProgress = this.getDefaultProgress();
+      // Use the current progress structure instead of calling getDefaultProgress
+      const currentProgress = {
+        languages: { ...this.progress.languages },
+        globalStats: { ...this.progress.user },
+        achievements: [...this.progress.achievements],
+        exerciseStats: { ...this.progress.exercisePerformance },
+        dailyStats: { ...this.progress.dailyStats },
+        version: this.version
+      };
       
       // Merge languages progress
       if (cloudProgress.languages) {
@@ -453,19 +461,23 @@ class ProgressTracker {
       // Merge achievements
       if (cloudProgress.achievements && Array.isArray(cloudProgress.achievements)) {
         const existingAchievements = new Set(
-          currentProgress.achievements.map(a => `${a.type}-${a.id}`)
+          currentProgress.achievements.map(a => `${a.type || 'general'}-${a.id}`)
         );
         
         cloudProgress.achievements.forEach(achievement => {
-          const achievementKey = `${achievement.type}-${achievement.id}`;
+          const achievementKey = `${achievement.type || 'general'}-${achievement.id}`;
           if (!existingAchievements.has(achievementKey)) {
             currentProgress.achievements.push(achievement);
           }
         });
       }
 
-      // Update the stored progress
-      this.progress = currentProgress;
+      // Update the stored progress with merged data
+      this.progress.languages = currentProgress.languages;
+      this.progress.user = currentProgress.globalStats;
+      this.progress.achievements = currentProgress.achievements;
+      this.progress.exercisePerformance = currentProgress.exerciseStats;
+      this.progress.dailyStats = currentProgress.dailyStats;
       this.saveProgress();
       
       console.log('Successfully synced with cloud data');
