@@ -775,4 +775,30 @@
 .lesson-not-found button:hover {
   background: #4caf00;
   transform: translateY(-2px);
+}
+
+/* iPhone fullscreen optimizations */
+@supports (-webkit-touch-callout: none) {
+  .lesson-interface {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+  
+  /* Fullscreen iPhone adjustments */
+  @media screen and (max-width: 480px) and (-webkit-min-device-pixel-ratio: 2) {
+    .lesson-interface {
+      padding-top: env(safe-area-inset-top, 20px);
+      min-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+      min-height: calc(-webkit-fill-available - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    }
+    
+    .lesson-content {
+      padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+    }
+    
+    .fixed-footer {
+      bottom: env(safe-area-inset-bottom, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 20px);
+    }
+  }
 } 
