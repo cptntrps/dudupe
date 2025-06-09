@@ -186,7 +186,7 @@ const LessonInterface = () => {
     }, 100); // Reduced delay to see if timing is the issue
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     console.log('=== CONTINUE BUTTON CLICKED ===');
     console.log('Current exercise index:', currentExerciseIndex);
     console.log('Total exercises:', currentLesson.exercises.length);
@@ -227,7 +227,7 @@ const LessonInterface = () => {
       
       try {
         console.log('Calling completeLesson');
-        const completionData = completeLesson(currentLesson.id, accuracy, timeSpent);
+        const completionData = await completeLesson(currentLesson.id, accuracy, timeSpent);
         
         console.log('Lesson completion result:', completionData);
         
@@ -243,6 +243,16 @@ const LessonInterface = () => {
         });
       } catch (error) {
         console.error('Error completing lesson:', error);
+        // Fallback navigation even if completion fails
+        navigate('/results', { 
+          state: { 
+            correctAnswers, 
+            totalQuestions: currentLesson.exercises.length,
+            xpEarned: currentLesson.xp,
+            accuracy: accuracy,
+            timeSpent: Math.round(timeSpent * 10) / 10
+          } 
+        });
       }
     }
   };
