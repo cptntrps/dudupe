@@ -9,7 +9,6 @@ const LessonMap = () => {
   const { 
     selectedLanguage, 
     userStats, 
-    isLessonCompleted, 
     getLessonCompletion,
     getLanguageProgress 
   } = useApp();
