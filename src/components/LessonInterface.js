@@ -9,8 +9,6 @@ const LessonInterface = () => {
   const navigate = useNavigate();
   const { 
     selectedLanguage, 
-    hearts, 
-    loseHeart, 
     completeLesson, 
     setCurrentLesson
   } = useApp();
@@ -22,7 +20,6 @@ const LessonInterface = () => {
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [lessonStartTime, setLessonStartTime] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [forceUpdate, setForceUpdate] = useState(0); // Force re-render mechanism
   
   // New state for advanced exercise types
   const [typedAnswer, setTypedAnswer] = useState('');
@@ -74,7 +71,7 @@ const LessonInterface = () => {
       
       console.log('State reset complete');
     }
-  }, [currentExerciseIndex, currentLesson?.exercises?.length]); // Only depend on exercise index and exercises array length
+  }, [currentExerciseIndex, currentLesson?.exercises]); // Depend on exercise index and exercises array
 
   const handleAnswerSelect = (answer) => {
     console.log('=== ANSWER SELECTION ATTEMPT ===');
@@ -93,34 +90,29 @@ const LessonInterface = () => {
     console.log('=== ANSWER SELECTION COMPLETE ===');
   };
 
-  const handleCheckAnswer = () => {
-    console.log('handleCheckAnswer called');
+  const handleCheckAnswer = async () => {
+    console.log('=== HANDLE CHECK ANSWER START ===');
+    console.log('Current exercise type:', currentExercise.type);
+    console.log('Selected answer:', selectedAnswer);
+    console.log('Typed answer:', typedAnswer);
     
-    if (isProcessing || showFeedback) {
-      console.log('Already processing or showing feedback, returning early');
+    if (isProcessing) {
+      console.log('Already processing, skipping...');
       return;
     }
     
-    if (!isAnswerReady()) {
-      console.log('No answer ready, returning early');
+    if (!selectedAnswer && !typedAnswer && draggedWords.length === 0 && wordOrderAnswer.length === 0) {
+      console.log('No answer provided');
       return;
     }
-
+    
+    console.log('Setting isProcessing to true');
     setIsProcessing(true);
-    console.log('Starting answer check...');
     
     setTimeout(() => {
-      let correct = false;
+      console.log('Processing answer after timeout...');
       
-      console.log('=== EXERCISE DETAILS ===');
-      console.log('Exercise ID:', currentExercise.id);
-      console.log('Exercise Type:', currentExercise.type);
-      console.log('Question:', currentExercise.question);
-      console.log('Correct Answer:', currentExercise.correctAnswer);
-      console.log('Available Options:', currentExercise.options);
-      console.log('Current Exercise Index:', currentExerciseIndex);
-      console.log('Total Exercises:', currentLesson.exercises.length);
-      console.log('========================');
+      let correct = false;
       
       if (currentExercise.type === 'image-match') {
         correct = selectedAnswer === currentExercise.correctAnswer;
@@ -177,24 +169,16 @@ const LessonInterface = () => {
       
       console.log('State should now be updated - showFeedback: true, isProcessing: false');
 
-      // Force re-render to ensure UI updates
-      setForceUpdate(prev => prev + 1);
-      console.log('Forced component re-render');
-
       // Handle exercise completion
       try {
         console.log('Not calling endExercise to prevent re-renders');
         // endExercise(currentExercise.type, correct);
 
         if (correct) {
-          console.log('Incrementing correct answers');
-          setCorrectAnswers(prev => {
-            console.log('Previous correct answers:', prev, '→ New:', prev + 1);
-            return prev + 1;
-          });
+          console.log('✅ Correct answer!');
+          setCorrectAnswers(prev => prev + 1);
         } else {
-          console.log('Losing heart');
-          loseHeart();
+          console.log('❌ Wrong answer detected!');
         }
       } catch (error) {
         console.error('Error in handleCheckAnswer:', error);
@@ -202,80 +186,70 @@ const LessonInterface = () => {
     }, 100); // Reduced delay to see if timing is the issue
   };
 
-  const handleContinue = async () => {
-    console.log('=== CONTINUE BUTTON CLICKED ===');
-    console.log('Current exercise index:', currentExerciseIndex);
-    console.log('Total exercises:', currentLesson.exercises.length);
-    console.log('Current question was:', currentExercise.question);
-    console.log('Correct answers so far:', correctAnswers);
-    console.log('==============================');
+  const handleContinue = () => {
+    console.log('handleContinue called');
+    console.log('showFeedback:', showFeedback);
+    console.log('currentExerciseIndex:', currentExerciseIndex);
+    console.log('totalExercises:', currentLesson.exercises.length);
     
-    // Reset states for next exercise
+    if (!showFeedback) {
+      console.log('No feedback showing, cannot continue yet');
+      return;
+    }
+    
+    // Reset states for next question
     setShowFeedback(false);
-    setIsProcessing(false);
     setSelectedAnswer(null);
     setTypedAnswer('');
     setDraggedWords([]);
+    setAvailableWords([]);
     setWordOrderAnswer([]);
+    
+    console.log('States reset for next question');
     
     if (currentExerciseIndex < currentLesson.exercises.length - 1) {
       console.log('Moving to next exercise');
-      console.log('Next exercise will be:', currentLesson.exercises[currentExerciseIndex + 1].question);
-      setCurrentExerciseIndex(prev => prev + 1);
+      setCurrentExerciseIndex(currentExerciseIndex + 1);
       
-      // Reset available words for drag-drop exercises
-      if (currentLesson.exercises[currentExerciseIndex + 1]?.type === 'drag-drop') {
-        setAvailableWords([...currentLesson.exercises[currentExerciseIndex + 1].words]);
+      // Initialize next exercise if it's drag-drop or word-order
+      const nextExercise = currentLesson.exercises[currentExerciseIndex + 1];
+      if (nextExercise.type === 'drag-drop' || nextExercise.type === 'word-order') {
+        const words = nextExercise.correctAnswer.split(' ');
+        const shuffled = [...words].sort(() => Math.random() - 0.5);
+        setAvailableWords(shuffled);
       }
     } else {
-      console.log('=== LESSON COMPLETE ===');
-      console.log('Final stats calculation...');
-      
-      const accuracy = Math.round((correctAnswers / currentLesson.exercises.length) * 100);
+      console.log('Lesson completed, navigating to results');
       const timeSpent = lessonStartTime ? (Date.now() - lessonStartTime) / 1000 / 60 : 0;
+      const accuracy = Math.round((correctAnswers / currentLesson.exercises.length) * 100);
+      const xpEarned = currentLesson.xp || 15;
       
-      console.log('Lesson completion data:');
-      console.log('- Correct answers:', correctAnswers);
-      console.log('- Total questions:', currentLesson.exercises.length);
-      console.log('- Accuracy:', accuracy + '%');
-      console.log('- Time spent:', timeSpent.toFixed(2), 'minutes');
-      console.log('======================');
+      console.log('Lesson completion stats:', {
+        correctAnswers,
+        totalQuestions: currentLesson.exercises.length,
+        accuracy,
+        timeSpent,
+        xpEarned
+      });
       
-      try {
-        console.log('Calling completeLesson');
-        const completionData = await completeLesson(currentLesson.id, accuracy, timeSpent);
-        
-        console.log('Lesson completion result:', completionData);
-        
-        // Ensure completionData is serializable and not a Promise
-        const safeCompletionData = completionData && typeof completionData === 'object' ? 
-          JSON.parse(JSON.stringify(completionData)) : completionData;
-        
-        navigate('/results', { 
-          state: { 
-            correctAnswers, 
-            totalQuestions: currentLesson.exercises.length,
-            xpEarned: safeCompletionData?.xpEarned || currentLesson.xp,
-            accuracy: accuracy,
-            timeSpent: Math.round(timeSpent * 10) / 10,
-            completionData: safeCompletionData
-          } 
-        });
-      } catch (error) {
-        console.error('Error completing lesson:', error);
-        // Fallback navigation even if completion fails
-        navigate('/results', { 
-          state: { 
-            correctAnswers, 
-            totalQuestions: currentLesson.exercises.length,
-            xpEarned: currentLesson.xp,
-            accuracy: accuracy,
-            timeSpent: Math.round(timeSpent * 10) / 10
-          } 
-        });
-      }
+      // Complete the lesson
+      completeLesson(currentLesson.id, accuracy, timeSpent);
+      
+      // Navigate to results
+      navigate('/results', {
+        state: {
+          correctAnswers,
+          totalQuestions: currentLesson.exercises.length,
+          accuracy,
+          timeSpent,
+          xpEarned,
+          completionData: null
+        }
+      });
     }
   };
+
+
 
   const handleExit = () => {
     const confirmExit = window.confirm('Are you sure you want to exit this lesson? Your progress will be lost. (Tem certeza de que deseja sair desta lição? Seu progresso será perdido.)');
@@ -341,34 +315,12 @@ const LessonInterface = () => {
     );
   }
 
-  if (hearts === 0) {
-    return (
-      <div className="lesson-interface">
-        <div className="out-of-hearts">
-          <div className="sad-luna">🦊💔</div>
-          <h2>You're out of hearts!</h2>
-          <p>Take a break and come back later, or practice old lessons to earn hearts back.</p>
-          <button className="back-to-map-btn" onClick={() => navigate('/lessons')}>
-            Back to Lessons
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="lesson-interface">
       <div className="lesson-header">
         <button className="close-button" onClick={handleExit}>×</button>
         <div className="progress-bar">
           <div className="progress-fill" style={{ width: `${progress}%` }}></div>
-        </div>
-        <div className="hearts">
-          {[...Array(5)].map((_, index) => (
-            <span key={index} className={`heart ${index >= hearts ? 'empty' : ''}`}>
-              ❤️
-            </span>
-          ))}
         </div>
       </div>
 
@@ -482,11 +434,18 @@ const LessonInterface = () => {
 
           {showFeedback && (
             <div className={`feedback ${isCorrect ? 'correct' : 'incorrect'}`}>
-              <div className="feedback-icon">
-                {isCorrect ? '✅' : '❌'}
-              </div>
-              <div className="feedback-text">
-                {isCorrect ? 'Great job! (Muito bem!)' : `Correct answer: ${currentExercise.correctAnswer} (Resposta correta: ${currentExercise.correctAnswer})`}
+              <div className="feedback-content">
+                <div className="feedback-icon">
+                  {isCorrect ? '✅' : '❌'}
+                </div>
+                <div className="feedback-text">
+                  <h3>{isCorrect ? 'Correct!' : 'Oops! Not quite right.'}</h3>
+                  {!isCorrect && (
+                    <div className="correct-answer">
+                      <p>The correct answer is: <strong>{currentExercise.correctAnswer}</strong></p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
@@ -496,22 +455,21 @@ const LessonInterface = () => {
       {/* Fixed bottom footer with buttons */}
       <div className="lesson-footer-fixed">
         {!showFeedback ? (
-          <div>
-            <button
-              className={`check-button ${isAnswerReady() && !isProcessing ? 'active' : ''}`}
-              onClick={handleCheckAnswer}
-              disabled={!isAnswerReady() || isProcessing}
+          <button 
+            className="check-button" 
+            onClick={handleCheckAnswer}
+            disabled={isProcessing || !isAnswerReady()}
+          >
+            {isProcessing ? 'Checking...' : 'Check'}
+          </button>
+                  ) : (
+            <button 
+              className="continue-button"
+              onClick={handleContinue}
             >
-              {isProcessing ? 'CHECKING...' : 'CHECK'}
+              Continue
             </button>
-          </div>
-        ) : (
-          <div>
-            <button className="continue-button" onClick={handleContinue}>
-              {currentExerciseIndex < currentLesson.exercises.length - 1 ? 'CONTINUE' : 'FINISH LESSON'}
-            </button>
-          </div>
-        )}
+          )}
       </div>
     </div>
   );

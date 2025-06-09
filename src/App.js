@@ -9,11 +9,18 @@ import ResultsScreen from './components/ResultsScreen';
 import AuthModal from './components/AuthModal';
 import UserProfile from './components/UserProfile';
 import AchievementNotification from './components/AchievementNotification';
+import ErrorBoundary from './components/ErrorBoundary';
+import { useMobileKeyboard } from './components/MobileKeyboardHandler';
 import './App.css';
+import './components/ErrorBoundary.css';
+import './styles/mobile.css';
 
 function AppContent() {
-  const { user, userData, loading, handleAuthSuccess, handleLogout } = useApp();
+  const { user, loading, handleAuthSuccess, handleLogout } = useApp();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  
+  // Initialize mobile keyboard handling
+  useMobileKeyboard();
 
   if (loading) {
     return (
@@ -79,11 +86,13 @@ function AppContent() {
 
 function App() {
   return (
-    <AppProvider>
-      <Router basename="/dudupe">
-        <AppContent />
-      </Router>
-    </AppProvider>
+    <ErrorBoundary>
+      <AppProvider>
+        <Router basename="/dudupe">
+          <AppContent />
+        </Router>
+      </AppProvider>
+    </ErrorBoundary>
   );
 }
 

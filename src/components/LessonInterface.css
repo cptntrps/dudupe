@@ -263,53 +263,7 @@
   box-shadow: 0 6px 16px rgba(88, 204, 2, 0.4);
 }
 
-.out-of-hearts {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
-  text-align: center;
-  padding: 40px 20px;
-}
 
-.sad-luna {
-  font-size: 64px;
-  margin-bottom: 20px;
-  animation: bounce 1s infinite;
-}
-
-.out-of-hearts h2 {
-  font-size: 24px;
-  font-weight: 700;
-  color: #ff4b4b;
-  margin: 0 0 16px 0;
-}
-
-.out-of-hearts p {
-  font-size: 16px;
-  color: #666;
-  margin: 0 0 32px 0;
-  line-height: 1.5;
-  max-width: 350px;
-}
-
-.back-to-map-btn {
-  background: #58cc02;
-  color: white;
-  padding: 16px 32px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.back-to-map-btn:hover {
-  background: #4caf00;
-  transform: translateY(-2px);
-}
 
 /* New Exercise Types Styles */
 
@@ -824,7 +778,6 @@
     .lesson-interface {
       padding-top: env(safe-area-inset-top, 20px);
       min-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
-      min-height: calc(-webkit-fill-available - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
     }
     
     .lesson-content {
@@ -835,5 +788,66 @@
       bottom: env(safe-area-inset-bottom, 0px);
       padding-bottom: env(safe-area-inset-bottom, 20px);
     }
+  }
+}
+
+/* Progress bar and hearts styling - MISSING FROM ORIGINAL */
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #e5e5e5;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 0 20px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #58cc02 0%, #3cd406 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+
+
+
+
+.correct-answer {
+  margin-top: 8px;
+}
+
+.correct-answer p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.correct-answer strong {
+  color: #374151;
+  font-weight: 600;
+}
+
+.feedback-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.feedback-text h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 480px) {
+  .feedback-text h3 {
+    font-size: 16px;
+  }
+  
+  .correct-answer p {
+    font-size: 13px;
   }
 } 

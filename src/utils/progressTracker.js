@@ -392,9 +392,6 @@ class ProgressTracker {
 
   // Get user statistics
   getUserStats() {
-    console.log('=== getUserStats DEBUG ===');
-    console.log('Raw progress.user:', this.progress.user);
-    
     const stats = {
       totalXP: this.progress.user.totalXP || 0,
       currentStreak: this.progress.user.currentStreak || 0,
@@ -407,9 +404,6 @@ class ProgressTracker {
       achievements: this.progress.achievements.length,
       recentAchievements: this.progress.achievements.slice(-3)
     };
-    
-    console.log('Computed stats:', stats);
-    console.log('=== END getUserStats DEBUG ===');
     
     return stats;
   }

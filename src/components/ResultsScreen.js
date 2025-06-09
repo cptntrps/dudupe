@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useApp } from '../context/AppContext';
 import Confetti from 'react-confetti';
 import './ResultsScreen.css';
 
 const ResultsScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { resetHearts } = useApp();
   const [showConfetti, setShowConfetti] = useState(true);
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
@@ -41,16 +39,11 @@ const ResultsScreen = () => {
       setShowConfetti(false);
     }, 4000);
 
-    // Reset hearts if lesson completed successfully
-    if (finalAccuracy >= 80) {
-      resetHearts();
-    }
-
     return () => {
       window.removeEventListener('resize', handleResize);
       clearTimeout(timer);
     };
-  }, [finalAccuracy, resetHearts]);
+  }, []);
 
   const handleContinue = () => {
     navigate('/lessons');
@@ -162,12 +155,7 @@ const ResultsScreen = () => {
               <span className="achievement-text">Perfect Score!</span>
             </div>
           )}
-          {finalAccuracy >= 80 && (
-            <div className="achievement">
-              <span className="achievement-icon">❤️</span>
-              <span className="achievement-text">Hearts Restored!</span>
-            </div>
-          )}
+
           {completionData?.achievements?.map((achievement, index) => (
             <div key={index} className="achievement">
               <span className="achievement-icon">{achievement.icon}</span>

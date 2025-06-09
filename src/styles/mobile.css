@@ -1,0 +1,142 @@
+/* Mobile Keyboard Handling */
+:root {
+  --viewport-height: 100vh;
+  --keyboard-open: 0;
+}
+
+/* Adjust layout when keyboard is open */
+body.keyboard-open {
+  height: var(--viewport-height);
+  overflow: hidden;
+}
+
+body.keyboard-open .App {
+  height: var(--viewport-height);
+  overflow-y: auto;
+}
+
+/* Mobile input handling */
+.mobile-input-container {
+  width: 100%;
+}
+
+/* Prevent iOS zoom on inputs */
+input, textarea, select {
+  font-size: 16px !important;
+  transform-origin: left top;
+}
+
+/* Better mobile input styles */
+@media (max-width: 768px) {
+  input[type="text"], textarea {
+    min-height: 44px; /* iOS recommended touch target */
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    transition: border-color 0.2s ease;
+  }
+  
+  input[type="text"]:focus, textarea:focus {
+    border-color: #58cc02;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(88, 204, 2, 0.1);
+  }
+  
+  /* Adjust layout when keyboard is visible */
+  body.keyboard-open .lesson-interface {
+    padding-bottom: 20px;
+  }
+  
+  body.keyboard-open .exercise-container {
+    max-height: calc(var(--viewport-height) - 120px);
+    overflow-y: auto;
+  }
+  
+  body.keyboard-open .lesson-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 16px;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+  }
+}
+
+/* Enhanced touch targets for mobile */
+@media (hover: none) and (pointer: coarse) {
+  button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px 16px;
+  }
+  
+  .answer-option {
+    min-height: 48px;
+    padding: 12px 16px;
+    margin: 8px 0;
+  }
+  
+  .drag-word, .word-order-word {
+    min-height: 40px;
+    min-width: 60px;
+    padding: 8px 12px;
+    margin: 4px;
+  }
+}
+
+/* Improved visual feedback for touch */
+@media (hover: none) {
+  button:active, .answer-option:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+  
+  .drag-word:active, .word-order-word:active {
+    transform: scale(1.05);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* Safe area adjustments for iOS */
+@supports (padding: max(0px)) {
+  .App {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+  
+  .lesson-footer {
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+  
+  .user-header, .guest-header {
+    padding-top: max(16px, env(safe-area-inset-top));
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (orientation: landscape) and (max-height: 500px) {
+  body.keyboard-open .exercise-container {
+    max-height: calc(var(--viewport-height) - 80px);
+  }
+  
+  .lesson-header {
+    padding: 8px 16px;
+  }
+  
+  .exercise-content {
+    padding: 16px;
+  }
+}
+
+/* Prevent overscroll bounce on iOS */
+body {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Better scrolling for exercise content */
+.exercise-container {
+  -webkit-overflow-scrolling: touch;
+  overflow-scrolling: touch;
+} 

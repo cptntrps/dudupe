@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import progressTracker from '../utils/progressTracker';
 import authService from '../services/authService';
 
@@ -14,7 +14,6 @@ export const useApp = () => {
 
 export const AppProvider = ({ children }) => {
   const [selectedLanguage, setSelectedLanguage] = useState(null);
-  const [hearts, setHearts] = useState(5);
   const [currentLesson, setCurrentLesson] = useState(null);
   
   // Authentication state
@@ -80,13 +79,31 @@ export const AppProvider = ({ children }) => {
     });
 
     return () => unsubscribe();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // No dependencies to avoid infinite loops - updateUserStats is stable
+
+  // Update user stats from progress tracker - MOVED BEFORE useEffect calls
+  const updateUserStats = useCallback(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('=== UPDATE USER STATS DEBUG ===');
+    }
+    const newStats = progressTracker.getUserStats();
+    if (process.env.NODE_ENV === 'development') {
+      console.log('progressTracker.getUserStats() returned:', newStats);
+    }
+    setUserStats(newStats);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('userStats state updated to:', newStats);
+      console.log('=== END UPDATE USER STATS DEBUG ===');
+    }
+  }, []); // No dependencies needed as progressTracker is stable
 
   // Load saved data from localStorage (legacy support)
   useEffect(() => {
     if (!authChecked) return; // Wait for auth check to complete
     
     const savedData = localStorage.getItem('lulearn-data');
+    
     if (savedData) {
       try {
         const data = JSON.parse(savedData);
@@ -96,34 +113,27 @@ export const AppProvider = ({ children }) => {
           setSelectedLanguage(data.selectedLanguage || null);
         }
         
-        setHearts(data.hearts || 5);
-        
         // Migrate old progress to new system if exists
         if (data.xp || data.completedLessons?.length > 0) {
-          console.log('Migrating legacy progress data...');
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Migrating legacy progress data...');
+          }
           // You could implement migration logic here if needed
         }
       } catch (error) {
-        console.warn('Failed to load legacy data:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Failed to load legacy data:', error);
+        }
       }
     }
     
     // Update user stats from progress tracker
     updateUserStats();
-  }, [authChecked, userData]);
-
-  // Update user stats from progress tracker
-  const updateUserStats = () => {
-    console.log('=== UPDATE USER STATS DEBUG ===');
-    const newStats = progressTracker.getUserStats();
-    console.log('progressTracker.getUserStats() returned:', newStats);
-    setUserStats(newStats);
-    console.log('userStats state updated to:', newStats);
-    console.log('=== END UPDATE USER STATS DEBUG ===');
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authChecked, userData?.preferences?.selectedLanguage]); // updateUserStats is stable, no need to include
 
   // Sync progress to cloud if user is authenticated
-  const syncProgressToCloud = async () => {
+  const syncProgressToCloud = useCallback(async () => {
     if (!user) return;
     
     console.log('=== SYNC TO CLOUD DEBUG ===');
@@ -167,16 +177,7 @@ export const AppProvider = ({ children }) => {
     }
     
     console.log('=== END SYNC TO CLOUD DEBUG ===');
-  };
-
-  // Heart management
-  const loseHeart = () => {
-    setHearts(prev => Math.max(0, prev - 1));
-  };
-
-  const resetHearts = () => {
-    setHearts(5);
-  };
+  }, [user]); // Only depend on user
 
   // XP and progress functions using new tracker
   const gainXP = (amount) => {
@@ -229,9 +230,6 @@ export const AppProvider = ({ children }) => {
     // Update user stats from progress tracker
     console.log('Updating user stats from progress tracker...');
     updateUserStats();
-    
-    // Reset hearts on lesson completion
-    resetHearts();
 
     // Sync to cloud if user is authenticated
     if (user) {
@@ -387,12 +385,6 @@ export const AppProvider = ({ children }) => {
     setSelectedLanguage: updateSelectedLanguage,
     currentLesson,
     setCurrentLesson,
-    
-    // Hearts system
-    hearts,
-    setHearts,
-    loseHeart,
-    resetHearts,
     
     // Progress and stats
     userStats,
