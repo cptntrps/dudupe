@@ -60,8 +60,8 @@ const LessonInterface = () => {
         setAvailableWords([...currentExercise.words]);
       }
       
-      // Start timing this exercise
-      startExercise();
+      // Don't call startExercise here to avoid re-renders
+      // startExercise();
     }
   }, [currentExerciseIndex]); // Only depend on exercise index, not currentExercise or startExercise
 
@@ -128,8 +128,8 @@ const LessonInterface = () => {
 
       // Handle exercise completion
       try {
-        console.log('Calling endExercise');
-        endExercise(currentExercise.type, correct);
+        console.log('Not calling endExercise to prevent re-renders');
+        // endExercise(currentExercise.type, correct);
 
         if (correct) {
           console.log('Incrementing correct answers');
