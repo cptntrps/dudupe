@@ -65,29 +65,31 @@ const LessonInterface = () => {
 
   const handleAnswerSelect = (answer) => {
     if (showFeedback || isProcessing) return;
+    console.log('Answer selected:', answer);
     setSelectedAnswer(answer);
   };
 
   const handleCheckAnswer = () => {
-    console.log('handleCheckAnswer called'); // Debug log
+    console.log('handleCheckAnswer called');
     
     if (isProcessing || showFeedback) {
       console.log('Already processing or showing feedback, returning early');
       return;
     }
     
-    if (!selectedAnswer && !typedAnswer && draggedWords.length === 0 && wordOrderAnswer.length === 0) {
-      console.log('No answer provided, returning early'); // Debug log
+    if (!isAnswerReady()) {
+      console.log('No answer ready, returning early');
       return;
     }
 
     setIsProcessing(true);
+    console.log('Starting answer check...');
     
     setTimeout(() => {
       let correct = false;
       
-      console.log('Current exercise:', currentExercise); // Debug log
-      console.log('Exercise type:', currentExercise.type); // Debug log
+      console.log('Current exercise:', currentExercise);
+      console.log('Exercise type:', currentExercise.type);
       
       if (currentExercise.type === 'image-match') {
         correct = selectedAnswer === currentExercise.correctAnswer;
@@ -106,51 +108,61 @@ const LessonInterface = () => {
         console.log('Multiple choice - Selected:', selectedAnswer, 'Correct:', currentExercise.correctAnswer, 'Result:', correct);
       }
 
-      console.log('Setting feedback - Correct:', correct); // Debug log
+      console.log('Setting feedback - Correct:', correct);
       setIsCorrect(correct);
       setShowFeedback(true);
       setIsProcessing(false);
 
       try {
-        // Record exercise performance with timing
-        console.log('Calling endExercise'); // Debug log
+        console.log('Calling endExercise');
         endExercise(currentExercise.type, correct);
 
         if (correct) {
-          console.log('Incrementing correct answers'); // Debug log
+          console.log('Incrementing correct answers');
           setCorrectAnswers(prev => prev + 1);
         } else {
-          console.log('Losing heart'); // Debug log
+          console.log('Losing heart');
           loseHeart();
         }
       } catch (error) {
-        console.error('Error in handleCheckAnswer:', error); // Debug log
+        console.error('Error in handleCheckAnswer:', error);
       }
-    }, 100); // Small delay to ensure UI updates properly
+    }, 500); // Increased delay for better UX
   };
 
   const handleContinue = () => {
-    console.log('handleContinue called'); // Debug log
-    console.log('Current exercise index:', currentExerciseIndex, 'Total exercises:', currentLesson.exercises.length); // Debug log
+    console.log('handleContinue called');
+    console.log('Current exercise index:', currentExerciseIndex, 'Total exercises:', currentLesson.exercises.length);
+    
+    // Reset states for next exercise
+    setShowFeedback(false);
+    setIsProcessing(false);
+    setSelectedAnswer(null);
+    setTypedAnswer('');
+    setDraggedWords([]);
+    setWordOrderAnswer([]);
     
     if (currentExerciseIndex < currentLesson.exercises.length - 1) {
-      console.log('Moving to next exercise'); // Debug log
+      console.log('Moving to next exercise');
       setCurrentExerciseIndex(prev => prev + 1);
+      
+      // Reset available words for drag-drop exercises
+      if (currentLesson.exercises[currentExerciseIndex + 1]?.type === 'drag-drop') {
+        setAvailableWords([...currentLesson.exercises[currentExerciseIndex + 1].words]);
+      }
     } else {
-      console.log('Lesson complete - calculating stats'); // Debug log
+      console.log('Lesson complete - calculating stats');
       
-      // Lesson complete - calculate lesson stats
       const accuracy = Math.round((correctAnswers / currentLesson.exercises.length) * 100);
-      const timeSpent = lessonStartTime ? (Date.now() - lessonStartTime) / 1000 / 60 : 0; // in minutes
+      const timeSpent = lessonStartTime ? (Date.now() - lessonStartTime) / 1000 / 60 : 0;
       
-      console.log('Lesson completion data:', { accuracy, timeSpent, correctAnswers, totalQuestions: currentLesson.exercises.length }); // Debug log
+      console.log('Lesson completion data:', { accuracy, timeSpent, correctAnswers, totalQuestions: currentLesson.exercises.length });
       
       try {
-        // Complete lesson with comprehensive tracking
-        console.log('Calling completeLesson'); // Debug log
+        console.log('Calling completeLesson');
         const completionData = completeLesson(currentLesson.id, accuracy, timeSpent);
         
-        console.log('Lesson completion result:', completionData); // Debug log
+        console.log('Lesson completion result:', completionData);
         
         navigate('/results', { 
           state: { 
@@ -158,12 +170,12 @@ const LessonInterface = () => {
             totalQuestions: currentLesson.exercises.length,
             xpEarned: completionData?.xpEarned || currentLesson.xp,
             accuracy: accuracy,
-            timeSpent: Math.round(timeSpent * 10) / 10, // Round to 1 decimal
+            timeSpent: Math.round(timeSpent * 10) / 10,
             completionData: completionData
           } 
         });
       } catch (error) {
-        console.error('Error completing lesson:', error); // Debug log
+        console.error('Error completing lesson:', error);
       }
     }
   };
