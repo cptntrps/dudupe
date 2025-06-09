@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useApp } from '../context/AppContext';
 import './AchievementNotification.css';
 
@@ -6,6 +6,14 @@ const AchievementNotification = () => {
   const { achievements, dismissAchievements } = useApp();
   const [visible, setVisible] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  const handleClose = useCallback(() => {
+    setVisible(false);
+    setTimeout(() => {
+      dismissAchievements();
+      setCurrentIndex(0);
+    }, 300);
+  }, [dismissAchievements]);
 
   useEffect(() => {
     if (achievements.length > 0) {
@@ -24,14 +32,6 @@ const AchievementNotification = () => {
     }
   }, [visible, achievements.length, handleClose]);
 
-  const handleClose = () => {
-    setVisible(false);
-    setTimeout(() => {
-      dismissAchievements();
-      setCurrentIndex(0);
-    }, 300); // Wait for animation to complete
-  };
-
   if (!visible || achievements.length === 0) {
     return null;
   }
@@ -39,38 +39,18 @@ const AchievementNotification = () => {
   const currentAchievement = achievements[currentIndex];
 
   return (
-    <div className={`achievement-overlay ${visible ? 'visible' : ''}`}>
-      <div className="achievement-notification">
-        <div className="achievement-header">
-          <h2>🎉 Achievement Unlocked!</h2>
-          <button 
-            className="close-button" 
-            onClick={handleClose}
-            aria-label="Close achievement notification"
-          >
-            ×
-          </button>
+    <div className={`achievement-notification ${visible ? 'show' : ''}`}>
+      <div className="achievement-content">
+        <button className="close-achievement" onClick={handleClose}>
+          ×
+        </button>
+        <div className="achievement-icon">
+          {currentAchievement.icon}
         </div>
-        
-        <div className="achievement-content">
-          <div className="achievement-icon">
-            {currentAchievement.icon}
-          </div>
-          <div className="achievement-details">
-            <h3>{currentAchievement.name}</h3>
-            <p>{currentAchievement.description}</p>
-          </div>
-        </div>
-        
-        <div className="achievement-footer">
-          {achievements.length > 1 && (
-            <div className="achievement-progress">
-              {currentIndex + 1} of {achievements.length}
-            </div>
-          )}
-          <div className="achievement-timestamp">
-            Earned {new Date(currentAchievement.earnedAt).toLocaleDateString()}
-          </div>
+        <div className="achievement-text">
+          <h3>Achievement Unlocked!</h3>
+          <p>{currentAchievement.name}</p>
+          <small>{currentAchievement.description}</small>
         </div>
       </div>
     </div>

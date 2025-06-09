@@ -363,6 +363,99 @@ class ProgressTracker {
     }
     return false;
   }
+
+  // Sync with cloud data - merge cloud progress with local progress
+  syncWithCloudData(cloudProgress) {
+    if (!cloudProgress || typeof cloudProgress !== 'object') {
+      console.warn('Invalid cloud progress data');
+      return false;
+    }
+
+    try {
+      const currentProgress = this.getDefaultProgress();
+      
+      // Merge languages progress
+      if (cloudProgress.languages) {
+        Object.keys(cloudProgress.languages).forEach(languageId => {
+          const cloudLangData = cloudProgress.languages[languageId];
+          const localLangData = currentProgress.languages[languageId] || {
+            lessons: {},
+            totalXP: 0,
+            lessonsCompleted: 0,
+            lastStudiedAt: null
+          };
+
+          // Merge lesson data, keeping the best progress for each lesson
+          const mergedLessons = { ...localLangData.lessons };
+          if (cloudLangData.lessons) {
+            Object.keys(cloudLangData.lessons).forEach(lessonId => {
+              const cloudLesson = cloudLangData.lessons[lessonId];
+              const localLesson = mergedLessons[lessonId];
+
+              if (!localLesson || cloudLesson.lastCompletedAt > localLesson.lastCompletedAt) {
+                mergedLessons[lessonId] = cloudLesson;
+              } else if (localLesson && cloudLesson.bestAccuracy > localLesson.bestAccuracy) {
+                // Keep local but update best accuracy if cloud is better
+                mergedLessons[lessonId] = {
+                  ...localLesson,
+                  bestAccuracy: cloudLesson.bestAccuracy
+                };
+              }
+            });
+          }
+
+          currentProgress.languages[languageId] = {
+            lessons: mergedLessons,
+            totalXP: Math.max(localLangData.totalXP, cloudLangData.totalXP || 0),
+            lessonsCompleted: Math.max(localLangData.lessonsCompleted, cloudLangData.lessonsCompleted || 0),
+            lastStudiedAt: localLangData.lastStudiedAt && cloudLangData.lastStudiedAt 
+              ? Math.max(localLangData.lastStudiedAt, cloudLangData.lastStudiedAt)
+              : localLangData.lastStudiedAt || cloudLangData.lastStudiedAt || null
+          };
+        });
+      }
+
+      // Merge global stats, keeping the maximum values
+      if (cloudProgress.globalStats) {
+        const cloudStats = cloudProgress.globalStats;
+        currentProgress.globalStats = {
+          totalXP: Math.max(currentProgress.globalStats.totalXP, cloudStats.totalXP || 0),
+          currentStreak: Math.max(currentProgress.globalStats.currentStreak, cloudStats.currentStreak || 0),
+          longestStreak: Math.max(currentProgress.globalStats.longestStreak, cloudStats.longestStreak || 0),
+          lessonsCompleted: Math.max(currentProgress.globalStats.lessonsCompleted, cloudStats.lessonsCompleted || 0),
+          totalTimeSpent: Math.max(currentProgress.globalStats.totalTimeSpent, cloudStats.totalTimeSpent || 0),
+          averageAccuracy: Math.max(currentProgress.globalStats.averageAccuracy, cloudStats.averageAccuracy || 0),
+          lastStudyDate: currentProgress.globalStats.lastStudyDate && cloudStats.lastStudyDate
+            ? Math.max(currentProgress.globalStats.lastStudyDate, cloudStats.lastStudyDate)
+            : currentProgress.globalStats.lastStudyDate || cloudStats.lastStudyDate || null
+        };
+      }
+
+      // Merge achievements
+      if (cloudProgress.achievements && Array.isArray(cloudProgress.achievements)) {
+        const existingAchievements = new Set(
+          currentProgress.achievements.map(a => `${a.type}-${a.id}`)
+        );
+        
+        cloudProgress.achievements.forEach(achievement => {
+          const achievementKey = `${achievement.type}-${achievement.id}`;
+          if (!existingAchievements.has(achievementKey)) {
+            currentProgress.achievements.push(achievement);
+          }
+        });
+      }
+
+      // Update the stored progress
+      this.progress = currentProgress;
+      this.saveProgress();
+      
+      console.log('Successfully synced with cloud data');
+      return true;
+    } catch (error) {
+      console.error('Error syncing with cloud data:', error);
+      return false;
+    }
+  }
 }
 
 // Create singleton instance

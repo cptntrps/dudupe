@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import progressTracker from '../utils/progressTracker';
+import authService from '../services/authService';
 
 const AppContext = createContext();
 
@@ -16,18 +17,74 @@ export const AppProvider = ({ children }) => {
   const [hearts, setHearts] = useState(5);
   const [currentLesson, setCurrentLesson] = useState(null);
   
+  // Authentication state
+  const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
+  
   // Progress tracking state
   const [userStats, setUserStats] = useState(progressTracker.getUserStats());
   const [achievements, setAchievements] = useState([]);
   const [exerciseStartTime, setExerciseStartTime] = useState(null);
 
+  // Listen for authentication state changes
+  useEffect(() => {
+    const unsubscribe = authService.onAuthStateChange(async (user) => {
+      setLoading(true);
+      
+      if (user) {
+        setUser(user);
+        
+        // Create user document if it doesn't exist
+        await authService.createUserDocument(user);
+        
+        // Load user data from Firestore
+        const userDataResult = await authService.getUserData(user.uid);
+        if (userDataResult.success) {
+          setUserData(userDataResult.data);
+          
+          // Set language preference from user data
+          if (userDataResult.data.preferences?.selectedLanguage) {
+            setSelectedLanguage(userDataResult.data.preferences.selectedLanguage);
+          }
+          
+          // Sync cloud progress with local progress tracker
+          if (userDataResult.data.progress) {
+            progressTracker.syncWithCloudData(userDataResult.data.progress);
+            updateUserStats();
+          }
+        }
+      } else {
+        // User is signed out
+        setUser(null);
+        setUserData(null);
+        
+        // Keep local progress but don't sync to cloud
+        // This allows guest users to still use the app
+      }
+      
+      setLoading(false);
+      setAuthChecked(true);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   // Load saved data from localStorage (legacy support)
   useEffect(() => {
+    if (!authChecked) return; // Wait for auth check to complete
+    
     const savedData = localStorage.getItem('duolingo-clone-data');
     if (savedData) {
       try {
         const data = JSON.parse(savedData);
-        setSelectedLanguage(data.selectedLanguage || null);
+        
+        // Only apply saved language if user doesn't have a preference
+        if (!userData?.preferences?.selectedLanguage) {
+          setSelectedLanguage(data.selectedLanguage || null);
+        }
+        
         setHearts(data.hearts || 5);
         
         // Migrate old progress to new system if exists
@@ -42,11 +99,27 @@ export const AppProvider = ({ children }) => {
     
     // Update user stats from progress tracker
     updateUserStats();
-  }, []);
+  }, [authChecked, userData]);
 
   // Update user stats from progress tracker
   const updateUserStats = () => {
     setUserStats(progressTracker.getUserStats());
+  };
+
+  // Sync progress to cloud if user is authenticated
+  const syncProgressToCloud = async () => {
+    if (!user) return;
+    
+    const localProgress = progressTracker.exportProgress();
+    await authService.updateUserData(user.uid, {
+      progress: localProgress,
+      totalXP: userStats.totalXP,
+      currentStreak: userStats.currentStreak,
+      longestStreak: userStats.longestStreak,
+      lessonsCompleted: userStats.lessonsCompleted,
+      averageAccuracy: userStats.averageAccuracy,
+      totalTimeSpent: userStats.totalTimeSpent
+    });
   };
 
   // Heart management
@@ -65,7 +138,7 @@ export const AppProvider = ({ children }) => {
   };
 
   // Complete lesson with comprehensive tracking
-  const completeLesson = (lessonId, accuracy = 100, timeSpent = 0) => {
+  const completeLesson = async (lessonId, accuracy = 100, timeSpent = 0) => {
     if (!selectedLanguage) {
       console.warn('No language selected for lesson completion');
       return;
@@ -101,6 +174,11 @@ export const AppProvider = ({ children }) => {
     
     // Reset hearts on lesson completion
     resetHearts();
+
+    // Sync to cloud if user is authenticated
+    if (user) {
+      await syncProgressToCloud();
+    }
 
     return completionData;
   };
@@ -178,10 +256,63 @@ export const AppProvider = ({ children }) => {
     setAchievements([]);
   };
 
+  // Language selection with cloud sync
+  const updateSelectedLanguage = async (language) => {
+    setSelectedLanguage(language);
+    
+    // Update user preferences in cloud if authenticated
+    if (user) {
+      await authService.updateUserData(user.uid, {
+        preferences: {
+          ...userData?.preferences,
+          selectedLanguage: language
+        }
+      });
+      
+      // Update local userData state
+      setUserData(prev => ({
+        ...prev,
+        preferences: {
+          ...prev?.preferences,
+          selectedLanguage: language
+        }
+      }));
+    }
+  };
+
+  // Authentication handlers
+  const handleAuthSuccess = async (authenticatedUser) => {
+    setUser(authenticatedUser);
+    
+    // Load user data and sync progress
+    const userDataResult = await authService.getUserData(authenticatedUser.uid);
+    if (userDataResult.success) {
+      setUserData(userDataResult.data);
+      
+      // Sync local progress to cloud
+      await syncProgressToCloud();
+    }
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setUserData(null);
+    setSelectedLanguage(null);
+    // Keep local progress for guest experience
+  };
+
   const value = {
+    // Authentication state
+    user,
+    userData,
+    loading,
+    authChecked,
+    handleAuthSuccess,
+    handleLogout,
+    
     // Language and lesson state
     selectedLanguage,
-    setSelectedLanguage,
+    setSelectedLanguage: updateSelectedLanguage,
     currentLesson,
     setCurrentLesson,
     
@@ -196,6 +327,7 @@ export const AppProvider = ({ children }) => {
     achievements,
     dismissAchievements,
     updateUserStats,
+    syncProgressToCloud,
     
     // Lesson management
     completeLesson,
