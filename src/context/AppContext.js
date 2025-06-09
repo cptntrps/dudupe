@@ -31,6 +31,11 @@ export const AppProvider = ({ children }) => {
   // Listen for authentication state changes
   useEffect(() => {
     const unsubscribe = authService.onAuthStateChange(async (user) => {
+      console.log('=== AUTH STATE CHANGE ===');
+      console.log('User:', user ? 'Logged in' : 'Logged out');
+      console.log('User ID:', user?.uid);
+      console.log('========================');
+      
       setLoading(true);
       
       if (user) {
@@ -41,8 +46,11 @@ export const AppProvider = ({ children }) => {
         
         // Load user data from Firestore
         const userDataResult = await authService.getUserData(user.uid);
+        console.log('Firestore user data result:', userDataResult);
+        
         if (userDataResult.success) {
           setUserData(userDataResult.data);
+          console.log('User data loaded:', userDataResult.data);
           
           // Set language preference from user data
           if (userDataResult.data.preferences?.selectedLanguage) {
@@ -51,9 +59,12 @@ export const AppProvider = ({ children }) => {
           
           // Sync cloud progress with local progress tracker
           if (userDataResult.data.progress) {
+            console.log('Syncing cloud progress with local tracker...');
             progressTracker.syncWithCloudData(userDataResult.data.progress);
             updateUserStats();
           }
+        } else {
+          console.error('Failed to load user data:', userDataResult.error);
         }
       } else {
         // User is signed out

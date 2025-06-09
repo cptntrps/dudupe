@@ -47,29 +47,50 @@ const LessonInterface = () => {
   useEffect(() => {
     if (currentExerciseIndex >= 0 && currentLesson?.exercises) {
       const exercise = currentLesson.exercises[currentExerciseIndex];
+      
+      console.log('=== NEW EXERCISE LOADED ===');
+      console.log('Exercise Index:', currentExerciseIndex);
+      console.log('Exercise Type:', exercise?.type);
+      console.log('Question:', exercise?.question);
+      console.log('===========================');
+      
       if (exercise?.type === 'drag-drop' && exercise.words) {
         setAvailableWords([...exercise.words]);
+        console.log('Initialized words for drag-drop:', exercise.words);
       }
       
-      // Reset states for new exercise
-      if (exercise) {
-        setSelectedAnswer(null);
-        setTypedAnswer('');
-        setDraggedWords([]);
-        setWordOrderAnswer([]);
-        setShowFeedback(false);
-        setIsProcessing(false);
+      if (exercise?.type === 'word-order' && exercise.words) {
+        console.log('Initialized words for word-order:', exercise.words);
       }
       
-      // Don't call startExercise here to avoid re-renders
-      // startExercise();
+      // Reset states for new exercise - only when exercise index changes
+      console.log('Resetting state for new exercise');
+      setSelectedAnswer(null);
+      setTypedAnswer('');
+      setDraggedWords([]);
+      setWordOrderAnswer([]);
+      setShowFeedback(false);
+      setIsProcessing(false);
+      
+      console.log('State reset complete');
     }
-  }, [currentExerciseIndex, currentLesson, currentExercise]); // Added currentExercise dependency
+  }, [currentExerciseIndex, currentLesson?.exercises?.length]); // Only depend on exercise index and exercises array length
 
   const handleAnswerSelect = (answer) => {
-    if (showFeedback || isProcessing) return;
-    console.log('Answer selected:', answer);
+    console.log('=== ANSWER SELECTION ATTEMPT ===');
+    console.log('Attempting to select answer:', answer);
+    console.log('showFeedback:', showFeedback);
+    console.log('isProcessing:', isProcessing);
+    console.log('Current selectedAnswer:', selectedAnswer);
+    
+    if (showFeedback || isProcessing) {
+      console.log('Selection blocked - feedback showing or processing');
+      return;
+    }
+    
+    console.log('Setting selected answer to:', answer);
     setSelectedAnswer(answer);
+    console.log('=== ANSWER SELECTION COMPLETE ===');
   };
 
   const handleCheckAnswer = () => {
