@@ -6,9 +6,16 @@ import './LessonMap.css';
 
 const LessonMap = () => {
   const navigate = useNavigate();
-  const { selectedLanguage, completedLessons, xp, streak } = useApp();
+  const { 
+    selectedLanguage, 
+    userStats, 
+    isLessonCompleted, 
+    getLessonCompletion,
+    getLanguageProgress 
+  } = useApp();
   
   const lessons = getLessonsForLanguage(selectedLanguage?.id);
+  const languageProgress = getLanguageProgress();
 
   const handleLessonClick = (lessonId) => {
     navigate(`/lesson/${lessonId}`);
@@ -21,11 +28,19 @@ const LessonMap = () => {
   const isLessonUnlocked = (lessonIndex) => {
     if (lessonIndex === 0) return true;
     const previousLessonId = lessons[lessonIndex - 1]?.id;
-    return completedLessons.has(previousLessonId);
+    return isLessonCompleted(previousLessonId);
   };
 
-  const isLessonCompleted = (lessonId) => {
-    return completedLessons.has(lessonId);
+  const getLessonStatus = (lessonId) => {
+    const completion = getLessonCompletion(lessonId);
+    if (!completion) return null;
+    
+    return {
+      completed: true,
+      accuracy: completion.accuracy,
+      xpEarned: completion.xpEarned,
+      completedAt: completion.completedAt
+    };
   };
 
   if (!selectedLanguage) {
@@ -44,18 +59,55 @@ const LessonMap = () => {
           <span className="language-name">{selectedLanguage.name}</span>
         </div>
         <div className="stats">
-          <div className="xp-display">
-            <span className="xp-icon">🏆</span>
-            <span>{xp}</span>
+          <div className="stat-item">
+            <span className="stat-icon">🏆</span>
+            <span className="stat-value">{userStats.totalXP}</span>
+            <span className="stat-label">XP</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-icon">🔥</span>
+            <span className="stat-value">{userStats.currentStreak}</span>
+            <span className="stat-label">Streak</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-icon">⭐</span>
+            <span className="stat-value">{userStats.level}</span>
+            <span className="stat-label">Level</span>
           </div>
         </div>
       </div>
+
+      {/* Language Progress Overview */}
+      {languageProgress && (
+        <div className="language-progress-overview">
+          <h3>📊 Your Progress</h3>
+          <div className="progress-stats">
+            <div className="progress-stat">
+              <span className="progress-number">{languageProgress.lessonsCompleted.length}</span>
+              <span className="progress-label">Lessons Completed</span>
+            </div>
+            <div className="progress-stat">
+              <span className="progress-number">{languageProgress.totalXP}</span>
+              <span className="progress-label">Language XP</span>
+            </div>
+            <div className="progress-stat">
+              <span className="progress-number">{languageProgress.overallAccuracy}%</span>
+              <span className="progress-label">Accuracy</span>
+            </div>
+            <div className="progress-stat">
+              <span className="progress-number">{Math.round(languageProgress.timeSpent)}</span>
+              <span className="progress-label">Minutes</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="map-content">
         <div className="map-path">
           {lessons.map((lesson, index) => {
             const unlocked = isLessonUnlocked(index);
-            const completed = isLessonCompleted(lesson.id);
+            const lessonStatus = getLessonStatus(lesson.id);
+            const completed = lessonStatus?.completed || false;
             
             return (
               <div key={lesson.id} className="lesson-node-container">
@@ -64,31 +116,74 @@ const LessonMap = () => {
                   onClick={() => unlocked && handleLessonClick(lesson.id)}
                 >
                   <div className="lesson-icon">
-                    {completed ? '✓' : unlocked ? '📚' : '🔒'}
+                    {completed ? (
+                      lessonStatus.accuracy === 100 ? '⭐' : '✓'
+                    ) : unlocked ? '📚' : '🔒'}
                   </div>
                   <div className="lesson-number">{lesson.id}</div>
+                  
+                  {/* Progress indicator for completed lessons */}
+                  {completed && (
+                    <div className="lesson-progress-badge">
+                      <span className="accuracy-badge">{lessonStatus.accuracy}%</span>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="lesson-info">
-                  <h3 className="lesson-title">{lesson.title}</h3>
+                  <h3 className="lesson-title">
+                    {lesson.title}
+                    {completed && lessonStatus.accuracy === 100 && (
+                      <span className="perfect-badge">Perfect!</span>
+                    )}
+                  </h3>
                   <p className="lesson-description">{lesson.description}</p>
-                  <div className="lesson-xp">+{lesson.xp} XP</div>
+                  <div className="lesson-meta">
+                    <div className="lesson-xp">+{lesson.xp} XP</div>
+                    <div className="lesson-difficulty">{lesson.difficulty}</div>
+                    {completed && (
+                      <div className="completion-info">
+                        <span className="earned-xp">Earned: {lessonStatus.xpEarned} XP</span>
+                        <span className="completion-date">
+                          {new Date(lessonStatus.completedAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {index < lessons.length - 1 && (
-                  <div className="path-connector"></div>
+                  <div className={`path-connector ${completed ? 'completed' : ''}`}></div>
                 )}
               </div>
             );
           })}
         </div>
 
-        {streak > 0 && (
+        {/* Achievements Display */}
+        {userStats.recentAchievements && userStats.recentAchievements.length > 0 && (
+          <div className="recent-achievements">
+            <h3>🏆 Recent Achievements</h3>
+            <div className="achievement-list">
+              {userStats.recentAchievements.map((achievement, index) => (
+                <div key={achievement.id} className="achievement-item">
+                  <span className="achievement-icon">{achievement.icon}</span>
+                  <div className="achievement-text">
+                    <span className="achievement-name">{achievement.name}</span>
+                    <span className="achievement-desc">{achievement.description}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {userStats.currentStreak > 0 && (
           <div className="streak-display">
             <div className="streak-flame">🔥</div>
             <div className="streak-text">
-              <strong>{streak} day streak!</strong>
-              <p>Keep it up!</p>
+              <strong>{userStats.currentStreak} day streak!</strong>
+              <p>Keep it up! Longest: {userStats.longestStreak} days</p>
             </div>
           </div>
         )}

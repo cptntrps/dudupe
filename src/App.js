@@ -5,6 +5,7 @@ import LanguageSelection from './components/LanguageSelection';
 import LessonMap from './components/LessonMap';
 import LessonInterface from './components/LessonInterface';
 import ResultsScreen from './components/ResultsScreen';
+import AchievementNotification from './components/AchievementNotification';
 import { AppProvider } from './context/AppContext';
 import './App.css';
 
@@ -21,6 +22,7 @@ function App() {
             <Route path="/results" element={<ResultsScreen />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <AchievementNotification />
         </div>
       </Router>
     </AppProvider>

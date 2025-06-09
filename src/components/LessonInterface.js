@@ -7,14 +7,22 @@ import './LessonInterface.css';
 const LessonInterface = () => {
   const { lessonId } = useParams();
   const navigate = useNavigate();
-  const { selectedLanguage, hearts, loseHeart, completeLesson, setCurrentLesson } = useApp();
+  const { 
+    selectedLanguage, 
+    hearts, 
+    loseHeart, 
+    completeLesson, 
+    setCurrentLesson,
+    startExercise,
+    endExercise
+  } = useApp();
   
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
-  // const [lessonComplete, setLessonComplete] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [lessonStartTime, setLessonStartTime] = useState(null);
   
   // New state for advanced exercise types
   const [typedAnswer, setTypedAnswer] = useState('');
@@ -30,10 +38,11 @@ const LessonInterface = () => {
   useEffect(() => {
     if (currentLesson) {
       setCurrentLesson(currentLesson);
+      setLessonStartTime(Date.now());
     }
   }, [currentLesson, setCurrentLesson]);
 
-  // Reset state when exercise changes
+  // Reset state when exercise changes and start timing
   useEffect(() => {
     if (currentExercise) {
       setSelectedAnswer(null);
@@ -46,8 +55,11 @@ const LessonInterface = () => {
       if (currentExercise.type === 'drag-drop' || currentExercise.type === 'word-order') {
         setAvailableWords([...currentExercise.words]);
       }
+      
+      // Start timing this exercise
+      startExercise();
     }
-  }, [currentExerciseIndex, currentExercise]);
+  }, [currentExerciseIndex, currentExercise, startExercise]);
 
   const handleAnswerSelect = (answer) => {
     if (showFeedback) return;
@@ -74,6 +86,9 @@ const LessonInterface = () => {
     setIsCorrect(correct);
     setShowFeedback(true);
 
+    // Record exercise performance with timing
+    endExercise(currentExercise.type, correct);
+
     if (correct) {
       setCorrectAnswers(prev => prev + 1);
     } else {
@@ -90,13 +105,21 @@ const LessonInterface = () => {
       setWordOrderAnswer([]);
       setShowFeedback(false);
     } else {
-      // Lesson complete
-      completeLesson(currentLesson.id);
+      // Lesson complete - calculate lesson stats
+      const accuracy = Math.round((correctAnswers / currentLesson.exercises.length) * 100);
+      const timeSpent = lessonStartTime ? (Date.now() - lessonStartTime) / 1000 / 60 : 0; // in minutes
+      
+      // Complete lesson with comprehensive tracking
+      const completionData = completeLesson(currentLesson.id, accuracy, timeSpent);
+      
       navigate('/results', { 
         state: { 
           correctAnswers, 
           totalQuestions: currentLesson.exercises.length,
-          xpEarned: currentLesson.xp 
+          xpEarned: completionData?.xpEarned || currentLesson.xp,
+          accuracy: accuracy,
+          timeSpent: Math.round(timeSpent * 10) / 10, // Round to 1 decimal
+          completionData: completionData
         } 
       });
     }
